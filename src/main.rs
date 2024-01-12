@@ -1,4 +1,4 @@
-use dsa_rust::bubble_sort;
+use dsa_rust::*;
 
 fn main() {
     let args = std::env::args();
@@ -14,5 +14,7 @@ fn main() {
 
     if option == "-b" {
         bubble_sort(numbers);
+    } else if option == "-s" {
+        selection_sort(numbers);
     }
 }
