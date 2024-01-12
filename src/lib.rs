@@ -7,11 +7,8 @@ pub fn bubble_sort(mut numbers: Vec<u32>) {
         done = true;
 
         while j < numbers.len() {
-            let (a, b) = (numbers[i], numbers[j]);
-
-            if a > b {
-                numbers[j] = a;
-                numbers[i] = b;
+            if numbers[i] > numbers[j] {
+                numbers.swap(i, j);
                 done = false;
             }
 
@@ -19,6 +16,7 @@ pub fn bubble_sort(mut numbers: Vec<u32>) {
             j += 1;
         }
     }
+
     println!("{:?}", numbers);
 }
 
@@ -36,9 +34,7 @@ pub fn selection_sort(mut numbers: Vec<u32>) {
             j += 1;
         }
 
-        let (a, b) = (numbers[i], numbers[lowest_number_index]);
-        numbers[i] = b;
-        numbers[lowest_number_index] = a;
+        numbers.swap(i, lowest_number_index);
         i += 1;
     }
 
