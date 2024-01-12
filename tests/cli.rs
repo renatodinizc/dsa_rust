@@ -1,0 +1,12 @@
+use assert_cmd::Command;
+
+#[test]
+fn assert_bubble_sort() {
+    let mut cmd = Command::cargo_bin("dsa_rust").unwrap();
+
+    cmd.args(["-b", "123", "45", "3", "28", "74", "19123", "28", "28", "1"]);
+
+    cmd.assert()
+        .success()
+        .stdout("[1, 3, 28, 28, 28, 45, 74, 123, 19123]\n");
+}
