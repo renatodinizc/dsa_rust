@@ -17,9 +17,7 @@ fn assert_bubble_sort2() {
 
     cmd.args(["-b", "1"]);
 
-    cmd.assert()
-        .success()
-        .stdout("[1]\n");
+    cmd.assert().success().stdout("[1]\n");
 }
 
 #[test]
@@ -39,9 +37,7 @@ fn assert_selection_sort2() {
 
     cmd.args(["-s", "1"]);
 
-    cmd.assert()
-        .success()
-        .stdout("[1]\n");
+    cmd.assert().success().stdout("[1]\n");
 }
 
 #[test]
@@ -61,7 +57,5 @@ fn assert_insertion_sort2() {
 
     cmd.args(["-i", "1"]);
 
-    cmd.assert()
-        .success()
-        .stdout("[1]\n");
+    cmd.assert().success().stdout("[1]\n");
 }
