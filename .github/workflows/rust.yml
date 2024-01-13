@@ -20,10 +20,13 @@ jobs:
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
-    - name: Make autotag executable
-      run: chmod +x bin/autotag
-    - name: Add autotag to PATH
-      run: export PATH=$PATH:$(pwd)/bin
-    - name: Create tag
-      run: bin/autotag
+    - name: Download and install autotag
+      run: |
+        curl -sL https://git.io/autotag-install | sh -s -- -b $(pwd)/bin
+    - name: Create and export autotag path
+      run: |
+        chmod +x $(pwd)/bin/autotag
+        export PATH=$PATH:$(pwd)/bin
+    - name: Create tag with autotag
+      run: autotag --scheme=conventional
 
