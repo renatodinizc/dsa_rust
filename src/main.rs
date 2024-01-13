@@ -13,10 +13,10 @@ fn main() {
     }
 
     if option == "-b" {
-        bubble_sort(numbers);
+        bubble_sort::sort(numbers);
     } else if option == "-s" {
-        selection_sort(numbers);
+        selection_sort::sort(numbers);
     } else if option == "-i" {
-        insertion_sort(numbers);
+        insertion_sort::sort(numbers);
     }
 }
