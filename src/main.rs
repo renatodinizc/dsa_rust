@@ -16,5 +16,7 @@ fn main() {
         bubble_sort(numbers);
     } else if option == "-s" {
         selection_sort(numbers);
+    } else if option == "-i" {
+        insertion_sort(numbers);
     }
 }
