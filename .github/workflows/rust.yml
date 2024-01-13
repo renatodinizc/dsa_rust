@@ -24,4 +24,6 @@ jobs:
       run: chmod +x bin/autotag
     - name: Add autotag to PATH
       run: export PATH=$PATH:$(pwd)/bin
+    - name: Create tag
+      run: bin/autotag
 
