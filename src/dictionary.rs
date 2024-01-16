@@ -8,7 +8,7 @@ use std::hash::{Hash, Hasher};
 // or resizing strategies for practical use.
 
 pub struct Dictionary<K, V> {
-    arr: [Option<KeyValue<K, V>>; 1000],
+    arr: [Option<KeyValue<K, V>>; 500],
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -20,7 +20,7 @@ pub struct KeyValue<K, V> {
 impl <K: Copy + Hash, V: Copy> Dictionary<K,V> {
     pub fn new() -> Dictionary<K,V> {
         Dictionary {
-            arr: [None; 1000]
+            arr: [None; 500]
         }
     }
 
@@ -35,10 +35,25 @@ impl <K: Copy + Hash, V: Copy> Dictionary<K,V> {
         self.arr[index as usize] = Some(key_value);
     }
 
-    pub fn get(&self, key: K) -> Option<KeyValue<K, V>>{
+    pub fn get(&self, key: K) -> Option<V> {
         let index = Dictionary::<K, V>::hash_key(key) % self.arr.len() as u64;
 
-        self.arr[index as usize]
+        match self.arr[index as usize] {
+            Some(key_value) => Some(key_value.value),
+            None => None,
+        }
+    }
+
+    pub fn delete(&mut self, key: K) -> Option<V> {
+        let index = Dictionary::<K, V>::hash_key(key) % self.arr.len() as u64;
+
+        let deleted_value = self.arr[index as usize];
+        self.arr[index as usize] = None;
+
+        match deleted_value {
+            Some(key_value) => Some(key_value.value),
+            None => None,
+        }
     }
 
     fn hash_key(key: K) -> u64 {

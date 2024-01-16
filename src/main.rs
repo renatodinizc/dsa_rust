@@ -33,4 +33,10 @@ fn main() {
     println!("uva: {:?}", dict.get("uva"));
     println!("sabonete: {:?}", dict.get("sabonete"));
     println!("batata doce: {:?}", dict.get("batata doce"));
+
+    println!("valor deletado: {:?}", dict.delete("laranja"));
+    println!("apos deletar laranja: {:?}", dict.get("laranja"));
+
+
+
 }
