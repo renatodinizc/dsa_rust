@@ -1,4 +1,3 @@
-use dsa_rust::dictionary::Dictionary;
 use dsa_rust::*;
 
 fn main() {
@@ -20,19 +19,4 @@ fn main() {
     } else if option == "-i" {
         insertion_sort::sort(numbers);
     }
-
-    let mut dict: Dictionary<&str, u32> = Dictionary::new();
-
-    dict.insert("banana", 10);
-    dict.insert("uva", 123);
-    dict.insert("laranja", 3);
-
-    println!("laranja: {:?}", dict.get("laranja"));
-    println!("banana: {:?}", dict.get("banana"));
-    println!("uva: {:?}", dict.get("uva"));
-    println!("sabonete: {:?}", dict.get("sabonete"));
-    println!("batata doce: {:?}", dict.get("batata doce"));
-
-    println!("valor deletado: {:?}", dict.delete("laranja"));
-    println!("apos deletar laranja: {:?}", dict.get("laranja"));
 }

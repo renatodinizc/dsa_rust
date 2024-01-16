@@ -13,13 +13,13 @@ impl<K: Copy + Hash, V: Copy> Dictionary<K, V> {
     pub fn insert(&mut self, key: K, value: V) {
         let key_value = (key, value);
 
-        let index = Self::hash_key(key) % self.arr.len() as u64;
+        let index = Self::hash_key(key) % self.len() as u64;
 
         self.arr[index as usize] = Some(key_value);
     }
 
     pub fn get(&self, key: K) -> Option<V> {
-        let index = Self::hash_key(key) % self.arr.len() as u64;
+        let index = Self::hash_key(key) % self.len() as u64;
 
         match self.arr[index as usize] {
             Some(key_value) => Some(key_value.1),
@@ -39,6 +39,10 @@ impl<K: Copy + Hash, V: Copy> Dictionary<K, V> {
         }
     }
 
+    fn len(&self) -> usize {
+        self.arr.len()
+    }
+
     fn hash_key(key: K) -> u64 {
         let mut hasher = DefaultHasher::new();
         key.hash(&mut hasher);
@@ -53,5 +57,22 @@ impl<K: Copy + Hash, V: Copy> Default for Dictionary<K, V> {
     }
 }
 
-// https://betterprogramming.pub/implementing-a-hashmap-in-rust-35d055b5ac2b
-// https://nnethercote.github.io/2021/12/08/a-brutally-effective-hash-function-in-rust.html
+#[test]
+fn assert_hashmap_get() {
+    let mut dict: Dictionary<&str, u32> = Dictionary::new();
+
+    dict.insert("banana", 10);
+
+    assert_eq!(dict.get("banana"), Some(10));
+    assert_eq!(dict.get("laranja"), None);
+}
+
+#[test]
+fn assert_hashmap_remove() {
+    let mut dict: Dictionary<&str, u32> = Dictionary::new();
+
+    dict.insert("banana", 10);
+
+    assert_eq!(dict.remove("banana"), Some(10));
+    assert_eq!(dict.remove("laranja"), None);
+}
