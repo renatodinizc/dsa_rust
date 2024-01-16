@@ -1,12 +1,6 @@
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
-// ## Note
-// Khe implementation is theoretical and may lead to poor developer experience
-// and memory optimization.
-// It is advisable to consider alternative data structures
-// or resizing strategies for practical use.
-
 pub struct Dictionary<K, V> {
     arr: [Option<KeyValue<K, V>>; 500],
 }
@@ -17,26 +11,21 @@ pub struct KeyValue<K, V> {
     pub value: V,
 }
 
-impl <K: Copy + Hash, V: Copy> Dictionary<K,V> {
-    pub fn new() -> Dictionary<K,V> {
-        Dictionary {
-            arr: [None; 500]
-        }
+impl<K: Copy + Hash, V: Copy> Dictionary<K, V> {
+    pub fn new() -> Dictionary<K, V> {
+        Dictionary { arr: [None; 500] }
     }
 
     pub fn insert(&mut self, key: K, value: V) {
-        let key_value = KeyValue {
-            key,
-            value,
-        };
+        let key_value = KeyValue { key, value };
 
-        let index = Dictionary::<K, V>::hash_key(key) % self.arr.len() as u64;
+        let index = Self::hash_key(key) % self.arr.len() as u64;
 
         self.arr[index as usize] = Some(key_value);
     }
 
     pub fn get(&self, key: K) -> Option<V> {
-        let index = Dictionary::<K, V>::hash_key(key) % self.arr.len() as u64;
+        let index = Self::hash_key(key) % self.arr.len() as u64;
 
         match self.arr[index as usize] {
             Some(key_value) => Some(key_value.value),
@@ -45,7 +34,7 @@ impl <K: Copy + Hash, V: Copy> Dictionary<K,V> {
     }
 
     pub fn delete(&mut self, key: K) -> Option<V> {
-        let index = Dictionary::<K, V>::hash_key(key) % self.arr.len() as u64;
+        let index = Self::hash_key(key) % self.arr.len() as u64;
 
         let deleted_value = self.arr[index as usize];
         self.arr[index as usize] = None;
@@ -64,7 +53,11 @@ impl <K: Copy + Hash, V: Copy> Dictionary<K,V> {
     }
 }
 
+impl<K: Copy + Hash, V: Copy> Default for Dictionary<K, V> {
+    fn default() -> Dictionary<K, V> {
+        Self::new()
+    }
+}
 
-// KODO:
 // https://betterprogramming.pub/implementing-a-hashmap-in-rust-35d055b5ac2b
 // https://nnethercote.github.io/2021/12/08/a-brutally-effective-hash-function-in-rust.html

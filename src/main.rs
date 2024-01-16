@@ -1,5 +1,5 @@
-use dsa_rust::*;
 use dsa_rust::dictionary::Dictionary;
+use dsa_rust::*;
 
 fn main() {
     let args = std::env::args();
@@ -21,7 +21,6 @@ fn main() {
         insertion_sort::sort(numbers);
     }
 
-
     let mut dict: Dictionary<&str, u32> = Dictionary::new();
 
     dict.insert("banana", 10);
@@ -36,7 +35,4 @@ fn main() {
 
     println!("valor deletado: {:?}", dict.delete("laranja"));
     println!("apos deletar laranja: {:?}", dict.get("laranja"));
-
-
-
 }
