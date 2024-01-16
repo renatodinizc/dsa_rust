@@ -2,13 +2,7 @@ use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
 pub struct Dictionary<K, V> {
-    arr: [Option<KeyValue<K, V>>; 500],
-}
-
-#[derive(Copy, Clone, Debug)]
-pub struct KeyValue<K, V> {
-    pub key: K,
-    pub value: V,
+    arr: [Option<(K, V)>; 500],
 }
 
 impl<K: Copy + Hash, V: Copy> Dictionary<K, V> {
@@ -17,7 +11,7 @@ impl<K: Copy + Hash, V: Copy> Dictionary<K, V> {
     }
 
     pub fn insert(&mut self, key: K, value: V) {
-        let key_value = KeyValue { key, value };
+        let key_value = (key, value);
 
         let index = Self::hash_key(key) % self.arr.len() as u64;
 
@@ -28,19 +22,19 @@ impl<K: Copy + Hash, V: Copy> Dictionary<K, V> {
         let index = Self::hash_key(key) % self.arr.len() as u64;
 
         match self.arr[index as usize] {
-            Some(key_value) => Some(key_value.value),
+            Some(key_value) => Some(key_value.1),
             None => None,
         }
     }
 
-    pub fn delete(&mut self, key: K) -> Option<V> {
+    pub fn remove(&mut self, key: K) -> Option<V> {
         let index = Self::hash_key(key) % self.arr.len() as u64;
 
-        let deleted_value = self.arr[index as usize];
+        let removed_value = self.arr[index as usize];
         self.arr[index as usize] = None;
 
-        match deleted_value {
-            Some(key_value) => Some(key_value.value),
+        match removed_value {
+            Some(key_value) => Some(key_value.1),
             None => None,
         }
     }
