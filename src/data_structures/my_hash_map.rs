@@ -8,7 +8,9 @@ pub struct MyHashMap<K, V> {
 
 impl<K: Clone + Hash, V: Clone> MyHashMap<K, V> {
     pub fn new() -> MyHashMap<K, V> {
-        MyHashMap { vec: vec![None; 500] }
+        MyHashMap {
+            vec: vec![None; 500],
+        }
     }
 
     pub fn insert(&mut self, key: K, value: V) -> Option<V> {
@@ -23,11 +25,8 @@ impl<K: Clone + Hash, V: Clone> MyHashMap<K, V> {
         let index = Self::hash_key(&key) % self.len() as u64;
 
         match self.vec.get(index as usize) {
-            Some(key_value_option) => match key_value_option {
-                Some((_key, value)) => Some(value),
-                None => None,
-            },
-            None => None,
+            Some(Some((_key, value))) => Some(value),
+            _ => None,
         }
     }
 
