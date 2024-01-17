@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a collection of different algorithms and data structures implemented in Rust. Currently, it includes implementations for two sorting algorithms: Bubble Sort and Selection Sort. The project is intended to serve as a learning resource for those interested in algorithms and data structures using the Rust programming language.
+This project is a collection of different algorithms and data structures implemented in Rust. Currently, it includes implementations for three sorting algorithms (Bubble Sort, Selection Sort and Insertion Sort) and a custom hash map data structure. The project is intended to serve as a learning resource for those interested in algorithms and data structures using the Rust programming language.
 
 ## Getting Started
 
@@ -19,6 +19,7 @@ The main application accepts command-line arguments to specify the sorting algor
 
 - `-b`: Bubble Sort
 - `-s`: Selection Sort
+- `-i`: Insertion Sort
 
 Example usage:
 
@@ -48,6 +49,33 @@ use dsa_rust::selection_sort;
 
 let numbers = vec![123, 45, 3, 28, 74, 19123, 28, 28, 1];
 selection_sort(numbers);
+```
+
+### Insertion Sort
+
+Insertion Sort is an efficient sorting algorithm that builds the final sorted array one element at a time. It iterates through the input array, comparing each element with its adjacent elements and placing it in its correct position.
+
+```rust
+Copy code
+use dsa_rust::insertion_sort;
+
+let numbers = vec![123, 45, 3, 28, 74, 19123, 28, 28, 1];
+insertion_sort(numbers);
+```
+
+## Data Structures Implementation
+
+### HashMap
+
+A simple hash map implementation with basic operations such as `insert`, `get`, and `remove`.
+
+```rust
+use dsa_rust::my_hash_map::MyHashMap;
+
+let mut hashmap = MyHashMap::new();
+hashmap.insert("key", "value");
+let retrieved_value = hashmap.get("key");
+let removed_value = hashmap.remove("key");
 ```
 
 ## Testing
