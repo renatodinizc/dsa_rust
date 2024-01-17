@@ -101,5 +101,3 @@ fn assert_hashmap_insert_multiple_items() {
     assert_eq!(dict.get("orange"), Some("orange"));
     assert_eq!(dict.get("grape"), Some("purple"));
 }
-
-
