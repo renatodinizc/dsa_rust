@@ -63,70 +63,120 @@ impl<K: Copy + Hash, V: Copy> Default for MyHashMap<K, V> {
 #[cfg(test)]
 mod tests {
     use super::MyHashMap;
-
     #[test]
-    fn assert_hashmap_get_item() {
-        let mut dict: MyHashMap<String, u32> = MyHashMap::new();
-
-        dict.insert(String::from("banana"), 7880);
-
-        assert_eq!(dict.get(String::from("banana")), Some(&7880));
-        assert_eq!(dict.get(String::from("orange")), None);
+    fn insert_and_get() {
+        let mut map = MyHashMap::new();
+        assert_eq!(map.insert("key1", 10), Some(10));
+        assert_eq!(map.get("key1"), Some(&10));
+        assert_eq!(map.get("key2"), None);
     }
 
     #[test]
-    fn assert_hashmap_remove_item() {
-        let mut dict: MyHashMap<String, u32> = MyHashMap::new();
-
-        dict.insert("banana".to_string(), 10);
-
-        assert_eq!(dict.remove(String::from("banana")), Some(10));
-        assert_eq!(dict.remove(String::from("banana")), None);
+    fn overwrite_value() {
+        let mut map = MyHashMap::new();
+        map.insert("key1", 10);
+        assert_eq!(map.insert("key1", 20), Some(20));
+        assert_eq!(map.get("key1"), Some(&20));
     }
 
     #[test]
-    fn assert_hashmap_update_item() {
-        let mut dict: MyHashMap<String, u32> = MyHashMap::new();
-
-        dict.insert("watermelon".to_string(), 3);
-        dict.insert("watermelon".to_string(), 18);
-
-        assert_eq!(dict.get(String::from("watermelon")), Some(&18));
+    fn remove_key() {
+        let mut map = MyHashMap::new();
+        map.insert("key1", 10);
+        assert_eq!(map.remove("key1"), Some(10));
+        assert_eq!(map.get("key1"), None);
     }
 
     #[test]
-    fn assert_hashmap_get_multiple_key_value_types() {
-        let mut dict1: MyHashMap<String, u8> = MyHashMap::new();
-        let mut dict2: MyHashMap<u64, &str> = MyHashMap::new();
-        let mut dict3: MyHashMap<u8, String> = MyHashMap::new();
-        let mut dict4: MyHashMap<&str, u32> = MyHashMap::new();
-
-        dict1.insert(String::from("banana"), 17);
-        dict2.insert(778, "plane");
-        dict3.insert(10, String::from("lover"));
-        dict4.insert("watermelon", 1082);
-
-        assert_eq!(dict1.get(String::from("banana")), Some(&17));
-        assert_eq!(dict2.get(778), Some(&"plane"));
-        assert_eq!(dict3.get(10u8), Some(&String::from("lover")));
-        assert_eq!(dict4.get("watermelon"), Some(&1082));
+    fn remove_nonexistent_key() {
+        let mut map: MyHashMap<&str, u32> = MyHashMap::new();
+        assert_eq!(map.remove("key1"), None);
     }
 
     #[test]
-    fn assert_hashmap_remove_multiple_key_value_types() {
-        let mut dict1: MyHashMap<String, u8> = MyHashMap::new();
-        let mut dict2: MyHashMap<u64, &str> = MyHashMap::new();
-        let mut dict3: MyHashMap<u8, String> = MyHashMap::new();
-        let mut dict4: MyHashMap<&str, u32> = MyHashMap::new();
+    fn handling_collisions() {
+        let mut map = MyHashMap::new();
+        map.insert(1, "value1");
+        map.insert(501, "value2"); // Assuming it will collide with 1
 
-        dict1.insert(String::from("banana"), 17);
-        dict2.insert(778, "plane");
-        dict3.insert(10, String::from("lover"));
-        dict4.insert("watermelon", 1082);
+        assert_eq!(map.get(1), Some(&"value1"));
+        assert_eq!(map.get(501), Some(&"value2")); // Checks if the collision is handled
+    }
 
-        assert_eq!(dict1.remove(String::from("banana")), Some(17));
-        assert_eq!(dict2.remove(778), Some("plane"));
-        assert_eq!(dict3.remove(10u8), Some(String::from("lover")));
-        assert_eq!(dict4.remove("watermelon"), Some(1082));
+    #[test]
+    fn string_keys_and_values() {
+        let mut map = MyHashMap::new();
+        map.insert("apple", "red");
+        map.insert("banana", "yellow");
+
+        assert_eq!(map.get("apple"), Some(&"red"));
+        assert_eq!(map.get("banana"), Some(&"yellow"));
+        assert_eq!(map.get("grape"), None);
+    }
+
+    #[test]
+    fn integer_keys_and_struct_values() {
+        #[derive(Debug, PartialEq, Clone)]
+        struct Fruit {
+            name: String,
+            color: String,
+        }
+
+        let mut map = MyHashMap::new();
+        map.insert(
+            1,
+            Fruit {
+                name: "apple".to_string(),
+                color: "red".to_string(),
+            },
+        );
+        map.insert(
+            2,
+            Fruit {
+                name: "banana".to_string(),
+                color: "yellow".to_string(),
+            },
+        );
+
+        assert_eq!(
+            map.get(1),
+            Some(&Fruit {
+                name: "apple".to_string(),
+                color: "red".to_string()
+            })
+        );
+        assert_eq!(
+            map.get(2),
+            Some(&Fruit {
+                name: "banana".to_string(),
+                color: "yellow".to_string()
+            })
+        );
+        assert_eq!(map.get(3), None);
+    }
+
+    #[test]
+    fn complex_key_structures() {
+        #[derive(Hash, PartialEq, Eq, Clone)]
+        struct ComplexKey {
+            part1: i32,
+            part2: String,
+        }
+
+        let mut map = MyHashMap::new();
+        let key1 = ComplexKey {
+            part1: 1,
+            part2: "one".to_string(),
+        };
+        let key2 = ComplexKey {
+            part1: 2,
+            part2: "two".to_string(),
+        };
+
+        map.insert(key1.clone(), "Value1");
+        map.insert(key2.clone(), "Value2");
+
+        assert_eq!(map.get(key1), Some(&"Value1"));
+        assert_eq!(map.get(key2), Some(&"Value2"));
     }
 }
