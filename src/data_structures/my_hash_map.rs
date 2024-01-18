@@ -95,14 +95,17 @@ fn assert_hashmap_get_multiple_key_value_types() {
     let mut dict1: MyHashMap<String, u8> = MyHashMap::new();
     let mut dict2: MyHashMap<u64, &str> = MyHashMap::new();
     let mut dict3: MyHashMap<u8, String> = MyHashMap::new();
+    let mut dict4: MyHashMap<&str, u32> = MyHashMap::new();
 
     dict1.insert(String::from("banana"), 17);
     dict2.insert(778, "plane");
     dict3.insert(10, String::from("lover"));
+    dict4.insert("watermelon", 1082);
 
     assert_eq!(dict1.get(String::from("banana")), Some(&17));
     assert_eq!(dict2.get(778), Some(&"plane"));
     assert_eq!(dict3.get(10u8), Some(&String::from("lover")));
+    assert_eq!(dict4.get("watermelon"), Some(&1082));
 }
 
 #[test]
@@ -110,12 +113,15 @@ fn assert_hashmap_remove_multiple_key_value_types() {
     let mut dict1: MyHashMap<String, u8> = MyHashMap::new();
     let mut dict2: MyHashMap<u64, &str> = MyHashMap::new();
     let mut dict3: MyHashMap<u8, String> = MyHashMap::new();
+    let mut dict4: MyHashMap<&str, u32> = MyHashMap::new();
 
     dict1.insert(String::from("banana"), 17);
     dict2.insert(778, "plane");
     dict3.insert(10, String::from("lover"));
+    dict4.insert("watermelon", 1082);
 
     assert_eq!(dict1.remove(String::from("banana")), Some(17));
     assert_eq!(dict2.remove(778), Some("plane"));
     assert_eq!(dict3.remove(10u8), Some(String::from("lover")));
+    assert_eq!(dict4.remove("watermelon"), Some(1082));
 }

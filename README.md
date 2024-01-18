@@ -2,11 +2,11 @@
 
 ## Overview
 
-This project is a collection of different algorithms and data structures implemented in Rust. Currently, it includes implementations for three sorting algorithms (Bubble Sort, Selection Sort and Insertion Sort) and a custom hash map data structure. The project is intended to serve as a learning resource for those interested in algorithms and data structures using the Rust programming language.
+This Rust project is a collection of algorithms and data structures, ideal for those looking to explore these concepts in Rust. It includes efficient implementations of Bubble Sort, Selection Sort, Insertion Sort, and Quick Sort algorithms, alongside a custom hash map data structure. The project aims to be a valuable resource for learning and applying data structures and algorithms in Rust.
 
 ## Getting Started
 
-To run the project, make sure you have Rust installed on your machine. You can then clone this repository and navigate to the project directory.
+Ensure you have Rust installed on your system for running this project. Clone the repository and navigate to the project directory:
 
 ```bash
 git clone https://github.com/renatodinizc/dsa_rust.git
@@ -14,73 +14,60 @@ cd dsa_rust
 ```
 
 ## Usage
+This library can be used both as an API for your Rust applications.
+To do so, import the modules to utilize the data structures and sorting algorithms you need.
 
-The main application accepts command-line arguments to specify the sorting algorithm and the list of numbers to be sorted. The supported options are:
+### Examples
+```rust
+use dsa_rust::insertion_sort;
+let sorted_array = insertion_sort::sort(vec![3, 1, 4, 1, 5, 9]);
+// Output: [1, 1, 3, 4, 5, 9]
+```
 
-- `-b`: Bubble Sort
-- `-s`: Selection Sort
-- `-i`: Insertion Sort
+```rust
+use dsa_rust::quicksort;
+let sorted_array = quicksort::sort(vec!["grapes", "potatoes", "apples", "pineapples", "watermelons"]);
+// Output: ["apples", "grapes", "pineapples", "potatoes", "watermelons"]
+```
 
-Example usage:
+```rust
+use dsa_rust::my_hash_map::MyHashMap;
 
-```bash
-cargo run -- -b 123 45 3 28 74 19123 28 28 1
+let mut map: MyHashMap<&str, u32> = MyHashMap::new();
+map.insert("key1", 108);
+map.insert("key2", 2010);
+let value = map.get("key1"); // Some(108)
+let removed_value = map.remove("key2"); // Some(2010)
+
 ```
 
 ## Implemented Algorithms
 
 ### Bubble Sort
 
-Bubble Sort is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order.
-
-```rust
-use dsa_rust::bubble_sort;
-
-let numbers = vec![123, 45, 3, 28, 74, 19123, 28, 28, 1];
-bubble_sort(numbers);
-```
+A straightforward algorithm, Bubble Sort repeatedly compares and swaps adjacent elements if they are in the wrong order. Its simplicity makes it suitable for small datasets and educational purposes.
 
 ### Selection Sort
 
-Selection Sort is another simple sorting algorithm that divides the input list into a sorted and an unsorted region. It repeatedly selects the smallest (or largest) element from the unsorted region and swaps it with the first element in the unsorted region.
-
-```rust
-use dsa_rust::selection_sort;
-
-let numbers = vec![123, 45, 3, 28, 74, 19123, 28, 28, 1];
-selection_sort(numbers);
-```
+This algorithm segments the list into sorted and unsorted parts. It continuously removes the smallest element from the unsorted segment and adds it to the sorted one. It's easy to understand but less efficient for larger lists.
 
 ### Insertion Sort
 
-Insertion Sort is an efficient sorting algorithm that builds the final sorted array one element at a time. It iterates through the input array, comparing each element with its adjacent elements and placing it in its correct position.
+Highly efficient for small or nearly sorted datasets, Insertion Sort builds the final sorted array one item at a time, offering an intuitive approach to sorting.
 
-```rust
-Copy code
-use dsa_rust::insertion_sort;
+### Quick Sort
 
-let numbers = vec![123, 45, 3, 28, 74, 19123, 28, 28, 1];
-insertion_sort(numbers);
-```
+Quick Sort is a highly efficient, divide-and-conquer algorithm, known for its superior performance with large datasets.
 
 ## Data Structures Implementation
 
-### HashMap
+### Custom HashMap
 
-A simple hash map implementation with basic operations such as `insert`, `get`, and `remove`.
-
-```rust
-use dsa_rust::my_hash_map::MyHashMap;
-
-let mut hashmap = MyHashMap::new();
-hashmap.insert("key", "value");
-let retrieved_value = hashmap.get("key");
-let removed_value = hashmap.remove("key");
-```
+Our custom hash map implementation demonstrates fundamental hash map operations with efficiency and simplicity, suitable for educational and practical purposes.
 
 ## Testing
 
-The project includes test cases to ensure the correctness of the implemented sorting algorithms. You can run the tests using the following command:
+Test cases are included for verifying the correctness of each algorithm and the hash map. Run tests with:
 
 ```bash
 cargo test
@@ -88,8 +75,8 @@ cargo test
 
 ## Contributing
 
-Contributions are welcome! Feel free to open issues or submit pull requests to improve the existing implementations or add new algorithms and data structures.
+We encourage contributions! Open issues or submit pull requests to enhance existing implementations or add new features.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
+This project is under the MIT License - see the [LICENSE](LICENSE.md) file for details.
