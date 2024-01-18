@@ -1,4 +1,4 @@
-pub fn sort(mut numbers: Vec<u32>) -> Vec<u32> {
+pub fn sort<T: PartialOrd + Clone>(mut numbers: Vec<T>) -> Vec<T> {
     if numbers.len() <= 1 {
         return numbers;
     }
@@ -8,7 +8,7 @@ pub fn sort(mut numbers: Vec<u32>) -> Vec<u32> {
     let mut l_part = sort(numbers[..pivot_index].to_vec());
     let r_part = sort(numbers[pivot_index + 1..].to_vec());
 
-    l_part.push(numbers[pivot_index]);
+    l_part.push(numbers[pivot_index].clone());
     l_part.extend(r_part);
 
     l_part
@@ -47,6 +47,56 @@ fn assert_quick_sort_with_u32() {
     let result = sort(numbers);
 
     assert_eq!(result, [1, 3, 28, 28, 28, 45, 74, 123, 19123]);
+}
+
+#[test]
+fn assert_quick_sort_with_f64() {
+    let numbers = vec![
+        123.4, 45f64, 3.1, 28.1, 28.02, 19123.97, 28.01, 28.001, 1f64,
+    ];
+
+    let result = sort(numbers);
+
+    assert_eq!(
+        result,
+        [1f64, 3.1, 28.001, 28.01, 28.02, 28.1, 45f64, 123.4, 19123.97]
+    );
+}
+
+#[test]
+fn assert_quick_sort_with_str() {
+    let numbers = vec!["grapes", "potatoes", "apples", "pineapples", "watermelons"];
+
+    let result = sort(numbers);
+
+    assert_eq!(
+        result,
+        ["apples", "grapes", "pineapples", "potatoes", "watermelons"]
+    );
+}
+
+#[test]
+fn assert_quick_sort_with_string() {
+    let numbers = vec![
+        "grapes".to_string(),
+        "potatoes".to_string(),
+        "apples".to_string(),
+        "pineapples".to_string(),
+        "watermelons".to_string(),
+    ];
+
+    let result = sort(numbers);
+
+    assert_eq!(
+        result,
+        [
+            "apples".to_string(),
+            "grapes".to_string(),
+            "pineapples".to_string(),
+            "potatoes".to_string(),
+            "watermelons".to_string()
+        ]
+    );
 }
 
 #[test]
