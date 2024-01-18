@@ -1,5 +1,2 @@
-pub mod bubble_sort;
+pub mod algorithms;
 pub mod data_structures;
-pub mod insertion_sort;
-pub mod quick_sort;
-pub mod selection_sort;
