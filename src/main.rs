@@ -18,5 +18,7 @@ fn main() {
         println!("{:?}", selection_sort::sort(numbers));
     } else if option == "-i" {
         println!("{:?}", insertion_sort::sort(numbers));
+    } else if option == "-q" {
+        println!("{:?}", quick_sort::sort(numbers));
     }
 }
