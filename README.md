@@ -2,7 +2,7 @@
 
 ## Overview
 
-This Rust project is a collection of algorithms and data structures, ideal for those looking to explore these concepts in Rust. It includes efficient implementations of Bubble Sort, Selection Sort, Insertion Sort, and Quick Sort algorithms, alongside a custom hash map data structure. The project aims to be a valuable resource for learning and applying data structures and algorithms in Rust.
+This Rust project is a collection of algorithms and data structures, ideal for those looking to explore these concepts in Rust. It includes efficient implementations of Bubble Sort, Selection Sort, Insertion Sort, and Quick Sort algorithms, along with custom implementations of a hash map, stack, and queue data structures. The project aims to be a valuable resource for learning and applying data structures and algorithms in Rust.
 
 ## Getting Started
 
@@ -14,7 +14,7 @@ cd dsa_rust
 ```
 
 ## Usage
-This library can be used both as an API for your Rust applications.
+This library can be used as an API for your Rust applications.
 To do so, import the modules to utilize the data structures and sorting algorithms you need.
 
 ### Examples
@@ -31,7 +31,7 @@ let sorted_array = quicksort::sort(vec!["grapes", "potatoes", "apples", "pineapp
 ```
 
 ```rust
-use dsa_rust::data_structures::MyHashMap;
+use dsa_rust::my_hash_map::MyHashMap;
 
 let mut map: MyHashMap<&str, u32> = MyHashMap::new();
 map.insert("key1", 108);
@@ -63,7 +63,13 @@ Quick Sort is a highly efficient, divide-and-conquer algorithm, known for its su
 
 ### Custom HashMap
 
-Our custom hash map implementation demonstrates fundamental hash map operations with efficiency and simplicity, suitable for educational and practical purposes.
+A generic hashmap implementation providing the fundamental operations as insert, get and remove with efficiency and simplicity,
+
+### Custom Stack
+A generic stack implementation providing basic stack operations like push, pop, and read, demonstrating a Last In, First Out (LIFO) behavior.
+
+### Custom Queue
+A generic queue implementation featuring operations such as enqueue, dequeue, and read, showcasing a First In, First Out (FIFO) behavior.
 
 ## Testing
 
