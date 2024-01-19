@@ -54,7 +54,7 @@ mod tests {
     }
 
     #[test]
-    fn sort_already_bubble_sorted() {
+    fn sort_already_sorted() {
         let input = vec![1, 2, 3, 4, 5];
         assert_eq!(sort(input.clone()), input);
     }

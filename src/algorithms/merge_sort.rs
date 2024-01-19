@@ -1,16 +1,37 @@
-pub fn sort<T: PartialOrd>(mut numbers: Vec<T>) -> Vec<T> {
-    let mut done: bool = false;
+pub fn sort<T: PartialOrd + Clone>(numbers: Vec<T>) -> Vec<T> {
+    if numbers.len() <= 1 {
+        return numbers;
+    }
 
-    while !done {
-        done = true;
-        for (i, j) in (1..numbers.len()).enumerate() {
-            if numbers[i] > numbers[j] {
-                numbers.swap(i, j);
-                done = false;
-            }
+    let half = numbers.len() / 2;
+
+    let left_half = &numbers[0..half];
+    let right_half = &numbers[half..];
+
+    let sorted_left = sort(left_half.to_vec());
+    let sorted_right = sort(right_half.to_vec());
+
+    merge(sorted_left, sorted_right)
+}
+
+fn merge<T: PartialOrd + Clone>(left_vec: Vec<T>, right_vec: Vec<T>) -> Vec<T> {
+    let mut sorted: Vec<T> = Vec::new();
+    let (mut i, mut j) = (0, 0);
+
+    while i < left_vec.len() && j < right_vec.len() {
+        if left_vec[i] <= right_vec[j] {
+            sorted.push(left_vec[i].clone());
+            i += 1;
+        } else {
+            sorted.push(right_vec[j].clone());
+            j += 1;
         }
     }
-    numbers
+
+    sorted.extend_from_slice(&left_vec[i..]);
+    sorted.extend_from_slice(&right_vec[j..]);
+
+    sorted
 }
 
 #[cfg(test)]
