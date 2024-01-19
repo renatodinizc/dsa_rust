@@ -2,7 +2,7 @@
 
 ## Overview
 
-This Rust project is a collection of algorithms and data structures, ideal for those looking to explore these concepts in Rust. It includes efficient implementations of Bubble Sort, Selection Sort, Insertion Sort, and Quick Sort algorithms, along with custom implementations of a hash map, stack, and queue data structures. The project aims to be a valuable resource for learning and applying data structures and algorithms in Rust.
+This Rust project is a collection of algorithms and data structures, ideal for those looking to explore these concepts in Rust. It includes efficient implementations of Bubble Sort, Selection Sort, Insertion Sort, Quick Sort and now Merge Sort algorithms, along with custom implementations of a hash map, stack, and queue data structures. The project aims to be a valuable resource for learning and applying data structures and algorithms in Rust.
 
 ## Getting Started
 
@@ -45,19 +45,28 @@ let removed_value = map.remove("key2"); // Some(2010)
 
 ### Bubble Sort
 
-A straightforward algorithm, Bubble Sort repeatedly compares and swaps adjacent elements if they are in the wrong order. Its simplicity makes it suitable for small datasets and educational purposes.
+A simple comparison-based algorithm where each pair of adjacent elements is compared and the elements are swapped if they are not in order.
+It's suitable for small data sets, but inefficient for larger lists due to its O(n²) average and worst-case complexity.
 
 ### Selection Sort
 
-This algorithm segments the list into sorted and unsorted parts. It continuously removes the smallest element from the unsorted segment and adds it to the sorted one. It's easy to understand but less efficient for larger lists.
+This algorithm sorts an array by repeatedly finding the minimum element from the unsorted part and moving it to the beginning.
+Although it has an O(n²) time complexity for all cases, it performs well on small lists.
 
 ### Insertion Sort
 
-Highly efficient for small or nearly sorted datasets, Insertion Sort builds the final sorted array one item at a time, offering an intuitive approach to sorting.
+It builds the final sorted array one item at a time, with efficient performance for small data sets.
+This algorithm is adaptive, and its average and worst-case performance is O(n²), making it less efficient for large lists.
 
 ### Quick Sort
 
-Quick Sort is a highly efficient, divide-and-conquer algorithm, known for its superior performance with large datasets.
+A highly efficient, divide-and-conquer sorting algorithm. It selects a 'pivot' element and partitions the other elements into two sub-arrays,
+according to whether they are less than or greater than the pivot. The sub-arrays are then sorted recursively.
+This algorithm is known for its superior performance with an average and worst-case complexity of O(n log n) and O(n²), respectively.
+
+### Merge Sort
+
+Merge Sort is an efficient, stable, comparison-based, divide-and-conquer sorting algorithm. Most implementations produce a stable sort, meaning that the implementation preserves the input order of equal elements in the sorted output. It is particularly good for large data sets where its O(n log n) time complexity outperforms simpler algorithms like Bubble Sort or Insertion Sort.
 
 ## Data Structures Implementation
 
