@@ -80,6 +80,8 @@ A generic stack implementation providing basic stack operations like push, pop, 
 ### Custom Queue
 A generic queue implementation featuring operations such as enqueue, dequeue, and read, showcasing a First In, First Out (FIFO) behavior.
 
+### Custom LinkedList
+A generic and memory-safe linked list implementation, supporting essential operations like peek_at, push_at, and pop_at, with iterator support for efficient element traversal.
 ## Testing
 
 Test cases are included for verifying the correctness of each algorithm and the hash map. Run tests with:
