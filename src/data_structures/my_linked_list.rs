@@ -12,6 +12,13 @@ impl<T> MyLinkedList<T> {
         MyLinkedList { head: None }
     }
 
+    pub fn peek(&self) -> Option<&T> {
+        match self.head.as_ref() {
+            None => None,
+            Some(node) => Some(&node.data),
+        }
+    }
+
     pub fn push(&mut self, data: T) {
         let new_node = Box::new(Node {
             data,
@@ -121,4 +128,22 @@ mod tests {
             })
         );
     }
+
+    #[test]
+    fn peek_empty_list() {
+        let list: MyLinkedList<i32> = MyLinkedList::new();
+        assert!(list.peek().is_none());
+    }
+
+    #[test]
+    fn peek_non_empty_list() {
+        let mut list = MyLinkedList::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        assert_eq!(list.peek(), Some(&3));
+    }
 }
+
+// https://rust-unofficial.github.io/too-many-lists/second-peek.html

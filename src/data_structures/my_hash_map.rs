@@ -63,6 +63,7 @@ impl<K: Copy + Hash, V: Copy> Default for MyHashMap<K, V> {
 #[cfg(test)]
 mod tests {
     use super::MyHashMap;
+
     #[test]
     fn insert_and_get() {
         let mut map = MyHashMap::new();
