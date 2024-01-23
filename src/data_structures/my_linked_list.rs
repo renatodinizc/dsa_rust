@@ -45,6 +45,14 @@ impl<T> Default for MyLinkedList<T> {
     }
 }
 
+impl<T> Iterator for MyLinkedList<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        self.pop()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::MyLinkedList;
@@ -144,6 +152,33 @@ mod tests {
 
         assert_eq!(list.peek(), Some(&3));
     }
+
+    #[test]
+    fn test_next() {
+        let mut list = MyLinkedList::new();
+
+        list.push(1); list.push(2); list.push(3);
+
+        assert_eq!(list.next(), Some(3));
+        assert_eq!(list.next(), Some(2));
+        assert_eq!(list.next(), Some(1));
+        assert_eq!(list.next(), None);
+    }
+
+    #[test]
+    fn iterator_yields_elements_in_order() {
+        let mut list = MyLinkedList::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        let mut elements = Vec::new();
+        for item in &mut list {
+            elements.push(item);
+        }
+
+        assert_eq!(elements, vec![3, 2, 1]);
+    }
 }
 
-// https://rust-unofficial.github.io/too-many-lists/second-peek.html
+// reference: https://rust-unofficial.github.io/too-many-lists/second-peek.html

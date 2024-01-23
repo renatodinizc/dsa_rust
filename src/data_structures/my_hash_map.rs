@@ -67,6 +67,7 @@ mod tests {
     #[test]
     fn insert_and_get() {
         let mut map = MyHashMap::new();
+
         assert_eq!(map.insert("key1", 10), Some(10));
         assert_eq!(map.get("key1"), Some(&10));
         assert_eq!(map.get("key2"), None);
