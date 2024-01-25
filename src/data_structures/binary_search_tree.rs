@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct TreeNode<T> {
     data: T,
     left_child: Option<Box<TreeNode<T>>>,
@@ -13,6 +13,29 @@ pub struct BinarySearchTree<T> {
 impl<T: PartialOrd> BinarySearchTree<T> {
     pub fn new() -> Self {
         BinarySearchTree { root: None }
+    }
+
+    pub fn search(&self, data: T) -> Option<&TreeNode<T>> {
+        match self.root.as_ref() {
+            None => None,
+            Some(mut node) => loop {
+                if data == node.data {
+                    return Some(node);
+                } else if data < node.data {
+                    if node.left_child.is_none() {
+                        return None;
+                    } else {
+                        node = node.left_child.as_ref().unwrap();
+                    }
+                } else {
+                    if node.right_child.is_none() {
+                        return None;
+                    } else {
+                        node = node.right_child.as_ref().unwrap();
+                    }
+                }
+            },
+        }
     }
 
     pub fn insert(&mut self, data: T) {
@@ -74,5 +97,9 @@ fn test_binary_search_tree() {
 
     bst.insert(45);
 
-    println!("{:#?}", bst);
+    assert_eq!(bst.search(45).unwrap().data, 45);
+    assert_eq!(bst.search(99), None);
+
+    // println!("{:#?}", bst);
+    println!("{:#?}", bst.search(99));
 }
