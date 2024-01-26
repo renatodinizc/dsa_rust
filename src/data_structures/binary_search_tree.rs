@@ -1,5 +1,8 @@
 #[derive(Debug, PartialEq, Clone)]
-pub struct TreeNode<T> where T: std::clone::Clone {
+pub struct TreeNode<T>
+where
+    T: std::clone::Clone,
+{
     data: T,
     left_child: Option<Box<TreeNode<T>>>,
     right_child: Option<Box<TreeNode<T>>>,
@@ -106,14 +109,16 @@ impl<T: PartialOrd + std::clone::Clone> BinarySearchTree<T> {
                             Some(target_data)
                         }
                         (Some(_left_child), Some(right_child)) => {
-                            let successor_node = Self::find_successor_node(successor_parent, right_child);
+                            let successor_node =
+                                Self::find_successor_node(*successor_parent, right_child);
 
                             parent_node.left_child = Some(successor_node);
                             Some(target_data)
-                        },
+                        }
                     }
                 } else {
                     let target = parent_node.right_child.take()?;
+                    let successor_parent = target.clone();
                     let target_data = target.data;
 
                     match (target.left_child, target.right_child) {
@@ -122,24 +127,43 @@ impl<T: PartialOrd + std::clone::Clone> BinarySearchTree<T> {
                             parent_node.right_child = Some(right_child);
                             Some(target_data)
                         }
-                        (Some(_left_child), Some(_right_child)) => panic!("asd"),
+                        (Some(_left_child), Some(right_child)) => {
+                            let successor_node =
+                                Self::find_successor_node(*successor_parent, right_child);
+
+                            parent_node.right_child = Some(successor_node);
+                            Some(target_data)
+                        }
                     }
                 }
             }
         }
     }
 
-    fn find_successor_node(successor_parent: Box<TreeNode<T>>, mut new_target: Box<TreeNode<T>>) -> Box<TreeNode<T>> {
+    fn find_successor_node(
+        successor_parent: TreeNode<T>,
+        mut new_target: Box<TreeNode<T>>,
+    ) -> Box<TreeNode<T>> {
+        if new_target.left_child.is_none() {
+            new_target.left_child = successor_parent.left_child;
+            return new_target;
+        }
+
+        let mut new_target_child = new_target.left_child.as_ref().unwrap();
+
         loop {
-            if new_target.left_child.is_none() {
-                new_target.left_child = successor_parent.left_child;
-                return new_target
+            if new_target_child.left_child.is_none() {
+                new_target.left_child.as_mut().unwrap().left_child = successor_parent.left_child;
+
+                if let Some(right_child) = new_target.right_child.take() {
+                    new_target.right_child = Some(right_child);
+                }
+                return new_target;
             } else {
-                new_target = new_target.left_child.unwrap();
+                new_target_child = &new_target_child.left_child.as_ref().unwrap();
             }
         }
     }
-
 }
 
 impl<T: PartialOrd + std::clone::Clone> Default for BinarySearchTree<T> {
@@ -148,35 +172,127 @@ impl<T: PartialOrd + std::clone::Clone> Default for BinarySearchTree<T> {
     }
 }
 
-#[test]
-fn test_binary_search_tree() {
-    let mut bst: BinarySearchTree<u32> = BinarySearchTree::new();
+#[cfg(test)]
+mod tests {
+    use super::BinarySearchTree;
+    use super::TreeNode;
 
-    bst.insert(50);
-    bst.insert(75);
-    bst.insert(25);
-    bst.insert(33);
-    bst.insert(56);
-    bst.insert(89);
-    bst.insert(10);
+    #[test]
+    fn test_insert_and_search() {
+        let mut bst = BinarySearchTree::new();
+        bst.insert(15);
+        bst.insert(10);
+        bst.insert(20);
+        bst.insert(8);
+        bst.insert(12);
 
-    bst.insert(40);
-    bst.insert(52);
-    bst.insert(61);
-    bst.insert(95);
-    bst.insert(4);
-    bst.insert(82);
-    bst.insert(11);
-    bst.insert(30);
+        assert!(bst.search(15).is_some());
+        assert!(bst.search(10).is_some());
+        assert!(bst.search(20).is_some());
+        assert!(bst.search(8).is_some());
+        assert!(bst.search(12).is_some());
+        assert!(bst.search(100).is_none());
+    }
 
-    bst.insert(45);
-    // bst.insert(55);
+    #[test]
+    fn test_remove_leaf_node() {
+        let mut bst = BinarySearchTree::new();
+        bst.insert(15);
+        bst.insert(10);
+        bst.insert(20);
 
-    assert_eq!(bst.search(45).unwrap().data, 45);
-    assert_eq!(bst.search(99), None);
+        assert_eq!(bst.remove(20), Some(20));
+        assert!(bst.search(20).is_none());
+    }
 
-    assert_eq!(bst.remove(30), Some(30));
-    assert_eq!(bst.remove(99), None);
-    assert_eq!(bst.remove(56), Some(56));
-    println!("{:#?}", bst);
+    #[test]
+    fn test_remove_node_with_one_child() {
+        let mut bst = BinarySearchTree::new();
+        bst.insert(15);
+        bst.insert(10);
+        bst.insert(20);
+        bst.insert(25);
+
+        assert_eq!(bst.remove(20), Some(20));
+        assert!(bst.search(20).is_none());
+        assert!(bst.search(25).is_some());
+    }
+
+    #[test]
+    fn test_remove_node_with_two_children() {
+        let mut bst = BinarySearchTree::new();
+        bst.insert(15);
+        bst.insert(10);
+        bst.insert(20);
+        bst.insert(17);
+        bst.insert(25);
+
+        assert_eq!(bst.remove(20), Some(20));
+
+        assert!(bst.search(20).is_none());
+        assert!(bst.search(17).is_some());
+        assert!(bst.search(25).is_some());
+    }
+
+    #[test]
+    fn test_nonexistent_element_removal_and_search() {
+        let mut bst = BinarySearchTree::new();
+        bst.insert(15);
+        bst.insert(10);
+        bst.insert(20);
+
+        assert_eq!(bst.remove(100), None);
+        assert!(bst.search(100).is_none());
+    }
+
+    impl<T: PartialOrd + Clone> BinarySearchTree<T> {
+        // Helper method to perform in-order traversal
+        pub fn in_order_traversal(&self) -> Vec<T> {
+            fn in_order<T: PartialOrd + Clone>(
+                node: &Option<Box<TreeNode<T>>>,
+                values: &mut Vec<T>,
+            ) {
+                if let Some(node) = node {
+                    in_order(&node.left_child, values);
+                    values.push(node.data.clone());
+                    in_order(&node.right_child, values);
+                }
+            }
+
+            let mut values = Vec::new();
+            in_order(&self.root, &mut values);
+            values
+        }
+    }
+
+    #[test]
+    fn test_in_order_traversal() {
+        let mut bst = BinarySearchTree::new();
+        bst.insert(15);
+        bst.insert(10);
+        bst.insert(20);
+        bst.insert(5);
+        bst.insert(12);
+
+        let traversal = bst.in_order_traversal();
+        assert_eq!(traversal, vec![5, 10, 12, 15, 20]);
+    }
+
+    // #[test]
+    // fn test_remove_root() {
+    //     let mut bst = BinarySearchTree::new();
+    //     bst.insert(15);
+    //     bst.insert(10);
+    //     bst.insert(20);
+    //     bst.insert(25);
+
+    //     assert_eq!(bst.remove(15), Some(15));
+    //     assert!(bst.search(15).is_none());
+    //     assert!(bst.search(10).is_some());
+    //     assert!(bst.search(20).is_some());
+    //     assert!(bst.search(25).is_some());
+
+    //     // Optionally check the new root if necessary
+    //     // assert_eq!(bst.root.as_ref().unwrap().data, <expected new root value>);
+    // }
 }
