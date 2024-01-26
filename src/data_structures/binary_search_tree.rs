@@ -66,6 +66,56 @@ impl<T: PartialOrd> BinarySearchTree<T> {
             },
         }
     }
+
+    pub fn remove(&mut self, data: T) -> Option<T> {
+        let pair = match self.root.as_mut() {
+            None => None,
+            Some(mut node) => loop {
+                if data < node.data {
+                    if node.left_child.is_none() {
+                        break None;
+                    } else if node.left_child.as_mut().unwrap().data == data {
+                        break Some((node, "left"));
+                    } else {
+                        node = node.left_child.as_mut().unwrap();
+                    }
+                } else {
+                    if node.right_child.is_none() {
+                        break None;
+                    } else if node.right_child.as_ref().unwrap().data == data {
+                        break Some((node, "right"));
+                    } else {
+                        node = node.right_child.as_mut().unwrap();
+                    }
+                }
+            },
+        };
+
+        match pair {
+            None => None,
+            Some((node, target_node)) => {
+                if target_node == "left" {
+                    if node.left_child.as_ref().unwrap().left_child.is_none()
+                        && node.left_child.as_ref().unwrap().right_child.is_none()
+                    {
+                        let result = node.left_child.take();
+                        Some(result.unwrap().data)
+                    } else {
+                        None
+                    }
+                } else {
+                    if node.right_child.as_ref().unwrap().left_child.is_none()
+                        && node.right_child.as_ref().unwrap().right_child.is_none()
+                    {
+                        let result = node.right_child.take();
+                        Some(result.unwrap().data)
+                    } else {
+                        None
+                    }
+                }
+            }
+        }
+    }
 }
 
 impl<T: PartialOrd> Default for BinarySearchTree<T> {
@@ -100,6 +150,7 @@ fn test_binary_search_tree() {
     assert_eq!(bst.search(45).unwrap().data, 45);
     assert_eq!(bst.search(99), None);
 
-    // println!("{:#?}", bst);
+    assert_eq!(bst.remove(30), Some(30));
+    assert_eq!(bst.remove(99), None);
     println!("{:#?}", bst.search(99));
 }
