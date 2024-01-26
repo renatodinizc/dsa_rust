@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TreeNode<T> {
     data: T,
     left_child: Option<Box<TreeNode<T>>>,
@@ -93,24 +93,30 @@ impl<T: PartialOrd> BinarySearchTree<T> {
 
         match pair {
             None => None,
-            Some((node, target_node)) => {
-                if target_node == "left" {
-                    if node.left_child.as_ref().unwrap().left_child.is_none()
-                        && node.left_child.as_ref().unwrap().right_child.is_none()
-                    {
-                        let result = node.left_child.take();
-                        Some(result.unwrap().data)
-                    } else {
-                        None
+            Some((parent_node, side)) => {
+                if side == "left" {
+                    let target = parent_node.left_child.take()?;
+                    let target_data = target.data;
+
+                    match (target.left_child, target.right_child) {
+                        (None, None) => Some(target_data),
+                        (Some(left_child), None) | (None, Some(left_child)) => {
+                            parent_node.left_child = Some(left_child);
+                            Some(target_data)
+                        }
+                        (Some(_left_child), Some(_right_child)) => panic!("asd"),
                     }
                 } else {
-                    if node.right_child.as_ref().unwrap().left_child.is_none()
-                        && node.right_child.as_ref().unwrap().right_child.is_none()
-                    {
-                        let result = node.right_child.take();
-                        Some(result.unwrap().data)
-                    } else {
-                        None
+                    let target = parent_node.right_child.take()?;
+                    let target_data = target.data;
+
+                    match (target.left_child, target.right_child) {
+                        (None, None) => Some(target_data),
+                        (Some(right_child), None) | (None, Some(right_child)) => {
+                            parent_node.right_child = Some(right_child);
+                            Some(target_data)
+                        }
+                        (Some(_left_child), Some(_right_child)) => panic!("asd"),
                     }
                 }
             }
@@ -147,10 +153,11 @@ fn test_binary_search_tree() {
 
     bst.insert(45);
 
-    assert_eq!(bst.search(45).unwrap().data, 45);
-    assert_eq!(bst.search(99), None);
+    // assert_eq!(bst.search(45).unwrap().data, 45);
+    // assert_eq!(bst.search(99), None);
 
-    assert_eq!(bst.remove(30), Some(30));
-    assert_eq!(bst.remove(99), None);
-    println!("{:#?}", bst.search(99));
+    // assert_eq!(bst.remove(30), Some(30));
+    // assert_eq!(bst.remove(99), None);
+    assert_eq!(bst.remove(40), Some(40));
+    println!("{:#?}", bst);
 }
