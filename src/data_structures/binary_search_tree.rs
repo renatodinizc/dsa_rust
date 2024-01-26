@@ -1,16 +1,16 @@
 #[derive(Debug, PartialEq, Clone)]
-pub struct TreeNode<T> {
+pub struct TreeNode<T> where T: std::clone::Clone {
     data: T,
     left_child: Option<Box<TreeNode<T>>>,
     right_child: Option<Box<TreeNode<T>>>,
 }
 
 #[derive(Debug)]
-pub struct BinarySearchTree<T> {
+pub struct BinarySearchTree<T: std::clone::Clone> {
     root: Option<Box<TreeNode<T>>>,
 }
 
-impl<T: PartialOrd> BinarySearchTree<T> {
+impl<T: PartialOrd + std::clone::Clone> BinarySearchTree<T> {
     pub fn new() -> Self {
         BinarySearchTree { root: None }
     }
@@ -96,6 +96,7 @@ impl<T: PartialOrd> BinarySearchTree<T> {
             Some((parent_node, side)) => {
                 if side == "left" {
                     let target = parent_node.left_child.take()?;
+                    let successor_parent = target.clone();
                     let target_data = target.data;
 
                     match (target.left_child, target.right_child) {
@@ -104,7 +105,12 @@ impl<T: PartialOrd> BinarySearchTree<T> {
                             parent_node.left_child = Some(left_child);
                             Some(target_data)
                         }
-                        (Some(_left_child), Some(_right_child)) => panic!("asd"),
+                        (Some(_left_child), Some(right_child)) => {
+                            let successor_node = Self::find_successor_node(successor_parent, right_child);
+
+                            parent_node.left_child = Some(successor_node);
+                            Some(target_data)
+                        },
                     }
                 } else {
                     let target = parent_node.right_child.take()?;
@@ -122,9 +128,21 @@ impl<T: PartialOrd> BinarySearchTree<T> {
             }
         }
     }
+
+    fn find_successor_node(successor_parent: Box<TreeNode<T>>, mut new_target: Box<TreeNode<T>>) -> Box<TreeNode<T>> {
+        loop {
+            if new_target.left_child.is_none() {
+                new_target.left_child = successor_parent.left_child;
+                return new_target
+            } else {
+                new_target = new_target.left_child.unwrap();
+            }
+        }
+    }
+
 }
 
-impl<T: PartialOrd> Default for BinarySearchTree<T> {
+impl<T: PartialOrd + std::clone::Clone> Default for BinarySearchTree<T> {
     fn default() -> Self {
         Self::new()
     }
@@ -152,12 +170,13 @@ fn test_binary_search_tree() {
     bst.insert(30);
 
     bst.insert(45);
+    // bst.insert(55);
 
-    // assert_eq!(bst.search(45).unwrap().data, 45);
-    // assert_eq!(bst.search(99), None);
+    assert_eq!(bst.search(45).unwrap().data, 45);
+    assert_eq!(bst.search(99), None);
 
-    // assert_eq!(bst.remove(30), Some(30));
-    // assert_eq!(bst.remove(99), None);
-    assert_eq!(bst.remove(40), Some(40));
+    assert_eq!(bst.remove(30), Some(30));
+    assert_eq!(bst.remove(99), None);
+    assert_eq!(bst.remove(56), Some(56));
     println!("{:#?}", bst);
 }
