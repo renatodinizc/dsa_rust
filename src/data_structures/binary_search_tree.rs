@@ -1,19 +1,20 @@
-#[derive(Debug, PartialEq, Clone)]
+use std::clone::Clone;
+
+#[derive(PartialEq, Clone)]
 pub struct TreeNode<T>
 where
-    T: std::clone::Clone,
+    T: Clone,
 {
     data: T,
     left_child: Option<Box<TreeNode<T>>>,
     right_child: Option<Box<TreeNode<T>>>,
 }
 
-#[derive(Debug)]
-pub struct BinarySearchTree<T: std::clone::Clone> {
+pub struct BinarySearchTree<T: Clone> {
     root: Option<Box<TreeNode<T>>>,
 }
 
-impl<T: PartialOrd + std::clone::Clone> BinarySearchTree<T> {
+impl<T: PartialOrd + Clone> BinarySearchTree<T> {
     pub fn new() -> Self {
         BinarySearchTree { root: None }
     }
@@ -166,7 +167,7 @@ impl<T: PartialOrd + std::clone::Clone> BinarySearchTree<T> {
     }
 }
 
-impl<T: PartialOrd + std::clone::Clone> Default for BinarySearchTree<T> {
+impl<T: PartialOrd + Clone> Default for BinarySearchTree<T> {
     fn default() -> Self {
         Self::new()
     }
@@ -178,7 +179,7 @@ mod tests {
     use super::TreeNode;
 
     #[test]
-    fn test_insert_and_search() {
+    fn insert_and_search() {
         let mut bst = BinarySearchTree::new();
         bst.insert(15);
         bst.insert(10);
@@ -195,7 +196,7 @@ mod tests {
     }
 
     #[test]
-    fn test_remove_leaf_node() {
+    fn remove_leaf_node() {
         let mut bst = BinarySearchTree::new();
         bst.insert(15);
         bst.insert(10);
@@ -206,7 +207,7 @@ mod tests {
     }
 
     #[test]
-    fn test_remove_node_with_one_child() {
+    fn remove_node_with_one_child() {
         let mut bst = BinarySearchTree::new();
         bst.insert(15);
         bst.insert(10);
@@ -219,7 +220,7 @@ mod tests {
     }
 
     #[test]
-    fn test_remove_node_with_two_children() {
+    fn remove_node_with_two_children() {
         let mut bst = BinarySearchTree::new();
         bst.insert(15);
         bst.insert(10);
@@ -235,7 +236,7 @@ mod tests {
     }
 
     #[test]
-    fn test_nonexistent_element_removal_and_search() {
+    fn nonexistent_element_removal_and_search() {
         let mut bst = BinarySearchTree::new();
         bst.insert(15);
         bst.insert(10);
@@ -266,7 +267,7 @@ mod tests {
     }
 
     #[test]
-    fn test_in_order_traversal() {
+    fn in_order_traversal() {
         let mut bst = BinarySearchTree::new();
         bst.insert(15);
         bst.insert(10);
@@ -278,8 +279,9 @@ mod tests {
         assert_eq!(traversal, vec![5, 10, 12, 15, 20]);
     }
 
+    // TODO: Resolve lasting problem of data the structure: remove root capability
     // #[test]
-    // fn test_remove_root() {
+    // fn remove_root() {
     //     let mut bst = BinarySearchTree::new();
     //     bst.insert(15);
     //     bst.insert(10);
