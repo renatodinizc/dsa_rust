@@ -3,13 +3,13 @@ struct Node<T> {
     next: Option<Box<Node<T>>>,
 }
 
-pub struct MyLinkedList<T> {
+pub struct LinkedList<T> {
     head: Option<Box<Node<T>>>,
 }
 
-impl<T> MyLinkedList<T> {
+impl<T> LinkedList<T> {
     pub fn new() -> Self {
-        MyLinkedList { head: None }
+        LinkedList { head: None }
     }
 
     pub fn peek(&self) -> Option<&T> {
@@ -92,13 +92,13 @@ impl<T> MyLinkedList<T> {
     }
 }
 
-impl<T> Default for MyLinkedList<T> {
+impl<T> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> Iterator for MyLinkedList<T> {
+impl<T> Iterator for LinkedList<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -108,17 +108,17 @@ impl<T> Iterator for MyLinkedList<T> {
 
 #[cfg(test)]
 mod tests {
-    use super::MyLinkedList;
+    use super::LinkedList;
 
     #[test]
     fn new_list_is_empty() {
-        let list: MyLinkedList<i32> = MyLinkedList::new();
+        let list: LinkedList<i32> = LinkedList::new();
         assert!(list.peek().is_none());
     }
 
     #[test]
     fn push_and_pop_with_integers() {
-        let mut list = MyLinkedList::new();
+        let mut list = LinkedList::new();
         list.push(1);
         list.push(2);
         assert_eq!(list.pop(), Some(2));
@@ -128,7 +128,7 @@ mod tests {
 
     #[test]
     fn peek_and_peek_at_with_strings() {
-        let mut list = MyLinkedList::new();
+        let mut list = LinkedList::new();
         list.push("apple".to_string());
         list.push("banana".to_string());
         assert_eq!(list.peek(), Some(&"banana".to_string()));
@@ -143,7 +143,7 @@ mod tests {
             y: i32,
         }
 
-        let mut list = MyLinkedList::new();
+        let mut list = LinkedList::new();
         list.push(Point { x: 1, y: 2 });
         list.push_at(1, Point { x: 3, y: 4 });
         assert_eq!(list.pop_at(1), Some(Point { x: 3, y: 4 }));
@@ -152,7 +152,7 @@ mod tests {
 
     #[test]
     fn peek_at_out_of_bounds_returns_none() {
-        let mut list = MyLinkedList::new();
+        let mut list = LinkedList::new();
         list.push(10);
         list.push(20);
         assert_eq!(list.peek_at(2), None);
@@ -160,7 +160,7 @@ mod tests {
 
     #[test]
     fn pop_at_from_empty_list() {
-        let mut list: MyLinkedList<f64> = MyLinkedList::new();
+        let mut list: LinkedList<f64> = LinkedList::new();
         assert_eq!(list.pop_at(0), None);
     }
 
@@ -172,7 +172,7 @@ mod tests {
             b: char,
         }
 
-        let mut list = MyLinkedList::new();
+        let mut list = LinkedList::new();
         let item = TestStruct { a: 1, b: 'a' };
         list.push(item);
 
@@ -181,7 +181,7 @@ mod tests {
 
     #[test]
     fn push_at_start_and_middle() {
-        let mut list = MyLinkedList::new();
+        let mut list = LinkedList::new();
         list.push_at(0, "start");
         list.push("middle");
         list.push_at(1, "end");
@@ -193,7 +193,7 @@ mod tests {
 
     #[test]
     fn complex_sequence_of_operations() {
-        let mut list = MyLinkedList::new();
+        let mut list = LinkedList::new();
         list.push(3); // List: [3]
         list.push(1); // List: [1, 3]
         list.push_at(1, 2); // List: [1, 2, 3]
@@ -207,7 +207,7 @@ mod tests {
 
     #[test]
     fn iterator_test() {
-        let mut list = MyLinkedList::new();
+        let mut list = LinkedList::new();
         list.push(1);
         list.push(2);
         list.push(3);

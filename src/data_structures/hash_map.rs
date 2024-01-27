@@ -2,13 +2,13 @@ use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
 #[derive(Debug)]
-pub struct MyHashMap<K, V> {
+pub struct HashMap<K, V> {
     vec: Vec<Option<(K, V)>>,
 }
 
-impl<K: Clone + Hash, V: Clone> MyHashMap<K, V> {
-    pub fn new() -> MyHashMap<K, V> {
-        MyHashMap {
+impl<K: Clone + Hash, V: Clone> HashMap<K, V> {
+    pub fn new() -> HashMap<K, V> {
+        HashMap {
             vec: vec![None; 500],
         }
     }
@@ -54,19 +54,19 @@ impl<K: Clone + Hash, V: Clone> MyHashMap<K, V> {
     }
 }
 
-impl<K: Copy + Hash, V: Copy> Default for MyHashMap<K, V> {
-    fn default() -> MyHashMap<K, V> {
+impl<K: Copy + Hash, V: Copy> Default for HashMap<K, V> {
+    fn default() -> HashMap<K, V> {
         Self::new()
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::MyHashMap;
+    use super::HashMap;
 
     #[test]
     fn insert_and_get() {
-        let mut map = MyHashMap::new();
+        let mut map = HashMap::new();
 
         assert_eq!(map.insert("key1", 10), Some(10));
         assert_eq!(map.get("key1"), Some(&10));
@@ -75,7 +75,7 @@ mod tests {
 
     #[test]
     fn overwrite_value() {
-        let mut map = MyHashMap::new();
+        let mut map = HashMap::new();
         map.insert("key1", 10);
         assert_eq!(map.insert("key1", 20), Some(20));
         assert_eq!(map.get("key1"), Some(&20));
@@ -83,7 +83,7 @@ mod tests {
 
     #[test]
     fn remove_key() {
-        let mut map = MyHashMap::new();
+        let mut map = HashMap::new();
         map.insert("key1", 10);
         assert_eq!(map.remove("key1"), Some(10));
         assert_eq!(map.get("key1"), None);
@@ -91,13 +91,13 @@ mod tests {
 
     #[test]
     fn remove_nonexistent_key() {
-        let mut map: MyHashMap<&str, u32> = MyHashMap::new();
+        let mut map: HashMap<&str, u32> = HashMap::new();
         assert_eq!(map.remove("key1"), None);
     }
 
     #[test]
     fn handling_collisions() {
-        let mut map = MyHashMap::new();
+        let mut map = HashMap::new();
         map.insert(1, "value1");
         map.insert(501, "value2"); // Assuming it will collide with 1
 
@@ -107,7 +107,7 @@ mod tests {
 
     #[test]
     fn string_keys_and_values() {
-        let mut map = MyHashMap::new();
+        let mut map = HashMap::new();
         map.insert("apple", "red");
         map.insert("banana", "yellow");
 
@@ -124,7 +124,7 @@ mod tests {
             color: String,
         }
 
-        let mut map = MyHashMap::new();
+        let mut map = HashMap::new();
         map.insert(
             1,
             Fruit {
@@ -165,7 +165,7 @@ mod tests {
             part2: String,
         }
 
-        let mut map = MyHashMap::new();
+        let mut map = HashMap::new();
         let key1 = ComplexKey {
             part1: 1,
             part2: "one".to_string(),

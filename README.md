@@ -31,9 +31,9 @@ let sorted_array = quicksort::sort(vec!["grapes", "potatoes", "apples", "pineapp
 ```
 
 ```rust
-use dsa_rust::my_hash_map::MyHashMap;
+use dsa_rust::hash_map::HashMap;
 
-let mut map: MyHashMap<&str, u32> = MyHashMap::new();
+let mut map: HashMap<&str, u32> = HashMap::new();
 map.insert("key1", 108);
 map.insert("key2", 2010);
 let value = map.get("key1"); // Some(108)

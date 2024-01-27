@@ -1,10 +1,10 @@
-pub struct MyStack<T> {
+pub struct Stack<T> {
     vec: Vec<T>,
 }
 
-impl<T> MyStack<T> {
-    pub fn new() -> MyStack<T> {
-        MyStack { vec: Vec::new() }
+impl<T> Stack<T> {
+    pub fn new() -> Stack<T> {
+        Stack { vec: Vec::new() }
     }
 
     pub fn push(&mut self, element: T) {
@@ -20,19 +20,19 @@ impl<T> MyStack<T> {
     }
 }
 
-impl<T> Default for MyStack<T> {
-    fn default() -> MyStack<T> {
-        MyStack::new()
+impl<T> Default for Stack<T> {
+    fn default() -> Stack<T> {
+        Stack::new()
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::MyStack;
+    use super::Stack;
 
     #[test]
     fn push_and_read() {
-        let mut stack = MyStack::new();
+        let mut stack = Stack::new();
         assert!(stack.read().is_none());
 
         stack.push(1);
@@ -44,7 +44,7 @@ mod tests {
 
     #[test]
     fn push_and_pop() {
-        let mut stack = MyStack::new();
+        let mut stack = Stack::new();
         stack.push(1);
         stack.push(2);
 
@@ -55,13 +55,13 @@ mod tests {
 
     #[test]
     fn read_empty_stack() {
-        let stack: MyStack<i32> = MyStack::new();
+        let stack: Stack<i32> = Stack::new();
         assert!(stack.read().is_none());
     }
 
     #[test]
     fn stack_with_string() {
-        let mut stack = MyStack::new();
+        let mut stack = Stack::new();
         stack.push("Hello".to_string());
         stack.push("World".to_string());
 
@@ -72,7 +72,7 @@ mod tests {
 
     #[test]
     fn stack_with_str_slice() {
-        let mut stack = MyStack::new();
+        let mut stack = Stack::new();
         stack.push("Apple");
         stack.push("Banana");
 
@@ -83,7 +83,7 @@ mod tests {
 
     #[test]
     fn stack_with_vector() {
-        let mut stack = MyStack::new();
+        let mut stack = Stack::new();
         stack.push(vec![1, 2, 3]);
         stack.push(vec![4, 5, 6]);
 
