@@ -179,6 +179,18 @@ impl<T: PartialOrd + Clone> BinarySearchTree<T> {
             Self::in_order(&node.right_child, values);
         }
     }
+
+    pub fn find_greatest_value(&self) -> Option<&TreeNode<T>> {
+        match self.root.as_ref() {
+            None => None,
+            Some(mut node) => loop {
+                if node.right_child.is_none() {
+                    return Some(node);
+                }
+                node = node.right_child.as_ref().unwrap();
+            },
+        }
+    }
 }
 
 impl<T: PartialOrd + Clone> Default for BinarySearchTree<T> {
@@ -288,6 +300,21 @@ mod tests {
                 "orange".to_string()
             ]
         );
+    }
+
+    #[test]
+    fn find_greatest_value() {
+        let mut bst = BinarySearchTree::new();
+        bst.insert(15);
+        bst.insert(10);
+        bst.insert(30);
+        bst.insert(17);
+        bst.insert(25);
+
+        match bst.find_greatest_value() {
+            Some(node) => assert_eq!(node.data, 30),
+            None => panic!("Expected a node, found None"),
+        }
     }
 
     // TODO: Resolve lasting problem of data the structure: remove root capability
