@@ -165,6 +165,20 @@ impl<T: PartialOrd + Clone> BinarySearchTree<T> {
             }
         }
     }
+
+    pub fn in_order_traversal(&self) -> Vec<T> {
+        let mut values = Vec::new();
+        Self::in_order(&self.root, &mut values);
+        values
+    }
+
+    fn in_order(node: &Option<Box<TreeNode<T>>>, values: &mut Vec<T>) {
+        if let Some(node) = node {
+            Self::in_order(&node.left_child, values);
+            values.push(node.data.clone());
+            Self::in_order(&node.right_child, values);
+        }
+    }
 }
 
 impl<T: PartialOrd + Clone> Default for BinarySearchTree<T> {
@@ -176,23 +190,18 @@ impl<T: PartialOrd + Clone> Default for BinarySearchTree<T> {
 #[cfg(test)]
 mod tests {
     use super::BinarySearchTree;
-    use super::TreeNode;
 
     #[test]
-    fn insert_and_search() {
+    fn insert_and_search_floats() {
         let mut bst = BinarySearchTree::new();
-        bst.insert(15);
-        bst.insert(10);
-        bst.insert(20);
-        bst.insert(8);
-        bst.insert(12);
+        bst.insert(1.5_f64);
+        bst.insert(2.3_f64);
+        bst.insert(0.7_f64);
 
-        assert!(bst.search(15).is_some());
-        assert!(bst.search(10).is_some());
-        assert!(bst.search(20).is_some());
-        assert!(bst.search(8).is_some());
-        assert!(bst.search(12).is_some());
-        assert!(bst.search(100).is_none());
+        assert!(bst.search(1.5_f64).is_some());
+        assert!(bst.search(2.3_f64).is_some());
+        assert!(bst.search(0.7_f64).is_some());
+        assert!(bst.search(3.14_f64).is_none());
     }
 
     #[test]
@@ -220,19 +229,19 @@ mod tests {
     }
 
     #[test]
-    fn remove_node_with_two_children() {
+    fn remove_node_with_two_children_strs() {
         let mut bst = BinarySearchTree::new();
-        bst.insert(15);
-        bst.insert(10);
-        bst.insert(20);
-        bst.insert(17);
-        bst.insert(25);
+        bst.insert("mango");
+        bst.insert("apple");
+        bst.insert("orange");
+        bst.insert("banana");
+        bst.insert("papaya");
 
-        assert_eq!(bst.remove(20), Some(20));
+        assert_eq!(bst.remove("orange"), Some("orange"));
 
-        assert!(bst.search(20).is_none());
-        assert!(bst.search(17).is_some());
-        assert!(bst.search(25).is_some());
+        assert!(bst.search("orange").is_none());
+        assert!(bst.search("banana").is_some());
+        assert!(bst.search("papaya").is_some());
     }
 
     #[test]
@@ -246,26 +255,6 @@ mod tests {
         assert!(bst.search(100).is_none());
     }
 
-    impl<T: PartialOrd + Clone> BinarySearchTree<T> {
-        // Helper method to perform in-order traversal
-        pub fn in_order_traversal(&self) -> Vec<T> {
-            fn in_order<T: PartialOrd + Clone>(
-                node: &Option<Box<TreeNode<T>>>,
-                values: &mut Vec<T>,
-            ) {
-                if let Some(node) = node {
-                    in_order(&node.left_child, values);
-                    values.push(node.data.clone());
-                    in_order(&node.right_child, values);
-                }
-            }
-
-            let mut values = Vec::new();
-            in_order(&self.root, &mut values);
-            values
-        }
-    }
-
     #[test]
     fn in_order_traversal() {
         let mut bst = BinarySearchTree::new();
@@ -277,6 +266,28 @@ mod tests {
 
         let traversal = bst.in_order_traversal();
         assert_eq!(traversal, vec![5, 10, 12, 15, 20]);
+    }
+
+    #[test]
+    fn in_order_traversal_strings() {
+        let mut bst = BinarySearchTree::new();
+        bst.insert("kiwi".to_string());
+        bst.insert("apple".to_string());
+        bst.insert("mango".to_string());
+        bst.insert("banana".to_string());
+        bst.insert("orange".to_string());
+
+        let traversal = bst.in_order_traversal();
+        assert_eq!(
+            traversal,
+            vec![
+                "apple".to_string(),
+                "banana".to_string(),
+                "kiwi".to_string(),
+                "mango".to_string(),
+                "orange".to_string()
+            ]
+        );
     }
 
     // TODO: Resolve lasting problem of data the structure: remove root capability
