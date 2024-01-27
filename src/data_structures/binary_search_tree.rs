@@ -180,6 +180,34 @@ impl<T: PartialOrd + Clone> BinarySearchTree<T> {
         }
     }
 
+    pub fn pre_order_traversal(&self) -> Vec<T> {
+        let mut values = Vec::new();
+        Self::pre_order(&self.root, &mut values);
+        values
+    }
+
+    fn pre_order(node: &Option<Box<TreeNode<T>>>, values: &mut Vec<T>) {
+        if let Some(node) = node {
+            values.push(node.data.clone());
+            Self::pre_order(&node.left_child, values);
+            Self::pre_order(&node.right_child, values);
+        }
+    }
+
+    pub fn post_order_traversal(&self) -> Vec<T> {
+        let mut values = Vec::new();
+        Self::post_order(&self.root, &mut values);
+        values
+    }
+
+    fn post_order(node: &Option<Box<TreeNode<T>>>, values: &mut Vec<T>) {
+        if let Some(node) = node {
+            Self::post_order(&node.left_child, values);
+            Self::post_order(&node.right_child, values);
+            values.push(node.data.clone());
+        }
+    }
+
     pub fn find_greatest_value(&self) -> Option<&TreeNode<T>> {
         match self.root.as_ref() {
             None => None,
@@ -300,6 +328,36 @@ mod tests {
                 "orange".to_string()
             ]
         );
+    }
+
+    #[test]
+    fn pre_order_traversal_test() {
+        let mut bst = BinarySearchTree::new();
+        bst.insert(15);
+        bst.insert(10);
+        bst.insert(20);
+        bst.insert(5);
+        bst.insert(12);
+        bst.insert(17);
+        bst.insert(25);
+
+        let traversal = bst.pre_order_traversal();
+        assert_eq!(traversal, vec![15, 10, 5, 12, 20, 17, 25]);
+    }
+
+    #[test]
+    fn post_order_traversal_test() {
+        let mut bst = BinarySearchTree::new();
+        bst.insert(15);
+        bst.insert(10);
+        bst.insert(20);
+        bst.insert(5);
+        bst.insert(12);
+        bst.insert(17);
+        bst.insert(25);
+
+        let traversal = bst.post_order_traversal();
+        assert_eq!(traversal, vec![5, 12, 10, 17, 25, 20, 15]);
     }
 
     #[test]
