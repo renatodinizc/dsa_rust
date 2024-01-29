@@ -7,7 +7,7 @@ impl<T: PartialOrd> Heap<T> {
         Heap { vec: Vec::new() }
     }
 
-    pub fn first_node(&self) -> Option<&T> {
+    pub fn peek(&self) -> Option<&T> {
         self.vec.first()
     }
 
@@ -28,83 +28,50 @@ impl<T: PartialOrd> Heap<T> {
         }
     }
 
+    fn parent_index(index: usize) -> usize {
+        (index - 1) / 2
+    }
+
     pub fn remove(&mut self) -> Option<T> {
         if self.vec.is_empty() {
             return None;
         }
-        let last_index = self.vec.len() - 1;
 
-        self.vec.swap(0, last_index);
+        let size = self.vec.len();
+        self.vec.swap(0, size - 1); // Swap the root with the last element
+        let result = self.vec.pop(); // Remove the last element (original root)
 
-        let mut current_node_index = 0;
-
+        let mut current = 0;
         loop {
-            match (
-                Self::left_child_value(self, current_node_index),
-                Self::right_child_value(self, current_node_index),
-            ) {
-                (Some(value), None) => {
-                    if self.vec[current_node_index] > *value {
-                        self.vec.swap(
-                            current_node_index,
-                            Self::left_child_index(current_node_index),
-                        )
-                    };
-                    current_node_index = Self::left_child_index(current_node_index);
-                }
-                (None, Some(value)) => {
-                    if self.vec[current_node_index] > *value {
-                        self.vec.swap(
-                            current_node_index,
-                            Self::right_child_index(current_node_index),
-                        )
-                    };
-                    current_node_index = Self::right_child_index(current_node_index);
-                }
-                (Some(left_value), Some(right_value)) => {
-                    if left_value > right_value {
-                        if self.vec[current_node_index] > *left_value {
-                            self.vec.swap(
-                                current_node_index,
-                                Self::left_child_index(current_node_index),
-                            )
-                        };
-                        current_node_index = Self::left_child_index(current_node_index);
-                    } else {
-                        if self.vec[current_node_index] > *right_value {
-                            self.vec.swap(
-                                current_node_index,
-                                Self::right_child_index(current_node_index),
-                            )
-                        };
-                        current_node_index = Self::right_child_index(current_node_index);
-                    }
-                }
-                (None, None) => break,
+            let left = Self::left_child_index(current);
+            let right = Self::right_child_index(current);
+            let mut largest = current;
+
+            if left < size - 1 && self.vec[left] > self.vec[largest] {
+                largest = left;
+            }
+
+            if right < size - 1 && self.vec[right] > self.vec[largest] {
+                largest = right;
+            }
+
+            if largest != current {
+                self.vec.swap(current, largest);
+                current = largest;
+            } else {
+                break;
             }
         }
 
-        self.vec.pop()
+        result
     }
 
     fn left_child_index(index: usize) -> usize {
         index * 2 + 1
     }
 
-    fn left_child_value(&self, index: usize) -> Option<&T> {
-        self.vec.get(Self::left_child_index(index))
-    }
-
     fn right_child_index(index: usize) -> usize {
         index * 2 + 2
-    }
-
-    fn right_child_value(&self, index: usize) -> Option<&T> {
-        self.vec.get(Self::right_child_index(index))
-    }
-
-    fn parent_index(index: usize) -> usize {
-        (index - 1) / 2
     }
 }
 
@@ -121,7 +88,7 @@ mod tests {
     #[test]
     fn creation() {
         let heap: Heap<i32> = Heap::new();
-        assert!(heap.first_node().is_none());
+        assert!(heap.peek().is_none());
     }
 
     #[test]
@@ -130,7 +97,7 @@ mod tests {
         heap.insert(10);
         heap.insert(20);
         heap.insert(5);
-        assert_eq!(heap.first_node(), Some(&20));
+        assert_eq!(heap.peek(), Some(&20));
     }
 
     #[test]
@@ -140,7 +107,7 @@ mod tests {
         heap.insert(20);
         heap.insert(15);
         assert_eq!(heap.remove(), Some(20));
-        assert_eq!(heap.first_node(), Some(&15));
+        assert_eq!(heap.peek(), Some(&15));
     }
 
     #[test]
@@ -148,12 +115,12 @@ mod tests {
         let mut float_heap = Heap::new();
         float_heap.insert(1.5);
         float_heap.insert(2.5);
-        assert_eq!(float_heap.first_node(), Some(&2.5));
+        assert_eq!(float_heap.peek(), Some(&2.5));
 
         let mut int_heap = Heap::new();
         int_heap.insert(1);
         int_heap.insert(2);
-        assert_eq!(int_heap.first_node(), Some(&2));
+        assert_eq!(int_heap.peek(), Some(&2));
     }
 
     #[test]
@@ -184,7 +151,7 @@ mod tests {
         heap.insert("apple".to_string());
         heap.insert("banana".to_string());
         heap.insert("cherry".to_string());
-        assert_eq!(heap.first_node(), Some(&"cherry".to_string()));
+        assert_eq!(heap.peek(), Some(&"cherry".to_string()));
     }
 
     #[test]
@@ -194,7 +161,7 @@ mod tests {
         heap.insert("banana".to_string());
         heap.insert("cherry".to_string());
         assert_eq!(heap.remove(), Some("cherry".to_string()));
-        assert_eq!(heap.first_node(), Some(&"banana".to_string()));
+        assert_eq!(heap.peek(), Some(&"banana".to_string()));
     }
 
     #[test]
@@ -203,7 +170,7 @@ mod tests {
         heap.insert("apple");
         heap.insert("banana");
         heap.insert("cherry");
-        assert_eq!(heap.first_node(), Some(&"cherry"));
+        assert_eq!(heap.peek(), Some(&"cherry"));
     }
 
     #[test]
@@ -213,6 +180,25 @@ mod tests {
         heap.insert("banana");
         heap.insert("cherry");
         assert_eq!(heap.remove(), Some("cherry"));
-        assert_eq!(heap.first_node(), Some(&"banana"));
+        assert_eq!(heap.peek(), Some(&"banana"));
+    }
+
+    #[test]
+    fn test_heap_order() {
+        let mut heap = Heap::new();
+        heap.insert(55);
+        heap.insert(22);
+        heap.insert(34);
+        heap.insert(10);
+        heap.insert(2);
+        heap.insert(99);
+        heap.insert(68);
+
+        let mut result = Vec::new();
+        while let Some(number) = heap.remove() {
+            result.push(number);
+        }
+
+        assert_eq!(result, vec![99, 68, 55, 34, 22, 10, 2]);
     }
 }
