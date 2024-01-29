@@ -89,6 +89,9 @@ A generic and memory-safe linked list implementation, supporting essential opera
 ### Custom Binary Search Tree
 A generic, memory-safe binary search tree custom implementation, supporting essential operations like search, insert and remove.
 
+### Custom Heap
+A generic heap implementation featuring basic operations like insert and remove items with O(log N). It is a natural fit for a priority queue implementation.
+
 ## Testing
 
 Test cases are included for verifying the correctness of each algorithm and the hash map. Run tests with:
