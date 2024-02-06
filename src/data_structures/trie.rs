@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[derive(Clone)]
 pub struct TrieNode {
     data: HashMap<char, Box<TrieNode>>,
 }
@@ -17,17 +18,17 @@ impl Trie {
         }
     }
 
-    pub fn search(&self, word: String) -> bool {
+    pub fn search(&self, word: String) -> Option<TrieNode> {
         let mut current_node = &self.root;
 
         for letter in word.chars() {
             match current_node.data.get(&letter) {
                 Some(node) => current_node = node,
-                None => return false,
+                None => return None,
             }
         }
 
-        true
+        Some(current_node.clone())
     }
 
     pub fn insert(&mut self, word: String) {
@@ -48,6 +49,38 @@ impl Trie {
             }),
         );
     }
+
+    pub fn collect_all_words<'a>(
+        &'a self,
+        node: &TrieNode,
+        word: String,
+        words: &'a mut Vec<String>,
+    ) -> Vec<String> {
+        for (letter, child_node) in &node.data {
+            if *letter == '*' {
+                words.push(word.clone());
+            } else {
+                let mut new_word = word.clone();
+                new_word.push(*letter);
+                Self::collect_all_words(self, child_node, new_word, words);
+            }
+        }
+
+        words.clone()
+    }
+
+    pub fn autocomplete(&self, prefix: String) -> Option<Vec<String>> {
+        let mut words: Vec<String> = Vec::new();
+        match Self::search(self, prefix.clone()) {
+            None => None,
+            Some(ref node) => Some(
+                Self::collect_all_words(self, node, String::new(), &mut words)
+                    .iter()
+                    .map(|word| prefix.clone() + word)
+                    .collect(),
+            ),
+        }
+    }
 }
 
 impl Default for Trie {
@@ -55,9 +88,6 @@ impl Default for Trie {
         Self::new()
     }
 }
-
-#[test]
-fn test_trie() {}
 
 #[cfg(test)]
 mod tests {
@@ -69,8 +99,8 @@ mod tests {
 
         trie.insert("hello".to_string());
 
-        assert_eq!(trie.search("hello".to_string()), true);
-        assert_eq!(trie.search("world".to_string()), false);
+        assert!(trie.search("hello".to_string()).is_some());
+        assert!(trie.search("world".to_string()).is_none());
     }
 
     #[test]
@@ -78,7 +108,7 @@ mod tests {
         let mut trie = Trie::new();
         trie.insert("hello".to_string());
 
-        assert_eq!(trie.search("hell".to_string()), true);
+        assert!(trie.search("hell".to_string()).is_some());
     }
 
     #[test]
@@ -88,10 +118,10 @@ mod tests {
         trie.insert("car".to_string());
         trie.insert("oiled".to_string());
 
-        assert_eq!(trie.search("oil".to_string()), true);
-        assert_eq!(trie.search("car".to_string()), true);
-        assert_eq!(trie.search("oiled".to_string()), true);
-        assert_eq!(trie.search("oiling".to_string()), false);
+        assert!(trie.search("oil".to_string()).is_some());
+        assert!(trie.search("car".to_string()).is_some());
+        assert!(trie.search("oiled".to_string()).is_some());
+        assert!(trie.search("oiling".to_string()).is_none());
     }
 
     #[test]
@@ -100,7 +130,7 @@ mod tests {
 
         trie.insert("".to_string());
 
-        assert_eq!(trie.search("".to_string()), true);
+        assert!(trie.search("".to_string()).is_some());
     }
 
     #[test]
@@ -108,6 +138,43 @@ mod tests {
         let mut trie = Trie::new();
         trie.insert("exist".to_string());
 
-        assert_eq!(trie.search("nonexistent".to_string()), false);
+        assert!(trie.search("nonexistent".to_string()).is_none());
+    }
+
+    #[test]
+    fn collect_all_words() {
+        let mut trie = Trie::new();
+        trie.insert("banana".to_string());
+        trie.insert("bananas".to_string());
+        trie.insert("banner".to_string());
+        trie.insert("strawberry".to_string());
+        trie.insert("peach".to_string());
+        trie.insert("grape".to_string());
+
+        let mut words: Vec<String> = Vec::new();
+        trie.collect_all_words(&trie.root, String::new(), &mut words);
+
+        assert!(words.contains(&"banana".to_string()));
+        assert!(words.contains(&"bananas".to_string()));
+        assert!(words.contains(&"banner".to_string()));
+        assert!(words.contains(&"strawberry".to_string()));
+        assert!(words.contains(&"peach".to_string()));
+        assert!(words.contains(&"grape".to_string()));
+        assert_eq!(words.contains(&"not_inserted".to_string()), false);
+    }
+
+    #[test]
+    fn autocompletes_word() {
+        let mut trie = Trie::new();
+        trie.insert("banana".to_string());
+        trie.insert("bananas".to_string());
+        trie.insert("banner".to_string());
+
+        let result = trie.autocomplete("ban".to_string());
+
+        assert!(result.is_some());
+        assert!(result.clone().unwrap().contains(&"banana".to_string()));
+        assert!(result.clone().unwrap().contains(&"bananas".to_string()));
+        assert!(result.clone().unwrap().contains(&"banner".to_string()));
     }
 }
