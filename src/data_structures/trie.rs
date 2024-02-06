@@ -71,15 +71,12 @@ impl Trie {
 
     pub fn autocomplete(&self, prefix: String) -> Option<Vec<String>> {
         let mut words: Vec<String> = Vec::new();
-        match Self::search(self, prefix.clone()) {
-            None => None,
-            Some(ref node) => Some(
-                Self::collect_all_words(self, node, String::new(), &mut words)
-                    .iter()
-                    .map(|word| prefix.clone() + word)
-                    .collect(),
-            ),
-        }
+        Self::search(self, prefix.clone()).as_ref().map(|node| {
+            Self::collect_all_words(self, node, String::new(), &mut words)
+                .iter()
+                .map(|word| prefix.clone() + word)
+                .collect()
+        })
     }
 }
 
@@ -164,17 +161,31 @@ mod tests {
     }
 
     #[test]
-    fn autocompletes_word() {
+    fn autocomplete_should_return_correct_completions_for_prefix() {
         let mut trie = Trie::new();
         trie.insert("banana".to_string());
         trie.insert("bananas".to_string());
         trie.insert("banner".to_string());
+        trie.insert("strawberry".to_string());
+        trie.insert("ben&jerries".to_string());
+        trie.insert("baltimore".to_string());
 
-        let result = trie.autocomplete("ban".to_string());
+        let result = trie.autocomplete("ban".to_string()).unwrap_or_default();
 
-        assert!(result.is_some());
-        assert!(result.clone().unwrap().contains(&"banana".to_string()));
-        assert!(result.clone().unwrap().contains(&"bananas".to_string()));
-        assert!(result.clone().unwrap().contains(&"banner".to_string()));
+        let expected_results = vec![
+            "banana".to_string(),
+            "bananas".to_string(),
+            "banner".to_string(),
+        ];
+        for expected_word in &expected_results {
+            assert!(
+                result.contains(expected_word),
+                "Expected word {} not found in autocomplete results.",
+                expected_word
+            );
+        }
+        assert!(!result.contains(&"strawberry".to_string()));
+        assert!(!result.contains(&"ben&jerries".to_string()));
+        assert!(!result.contains(&"baltimore".to_string()));
     }
 }
