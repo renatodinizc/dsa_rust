@@ -92,6 +92,9 @@ A generic, memory-safe binary search tree custom implementation, supporting esse
 ### Custom Heap
 A generic heap implementation featuring basic operations like insert and remove items with O(log N). It is a natural fit for a priority queue implementation.
 
+### Custom Trie
+A generic Trie implementation, which can be used to implement a autocomplete feature for words in a smartphone. Pretty cool!
+
 ## Testing
 
 Test cases are included for verifying the correctness of each algorithm and the hash map. Run tests with:
