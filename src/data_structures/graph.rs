@@ -92,7 +92,19 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
         None
     }
 
-    pub fn depth_first_traversal(
+    pub fn traversal(&self, start_vertex_value: T, kind: &str) {
+        let mut visited_vertices: HashMap<usize, bool> = HashMap::new();
+
+        if kind == "bft" {
+            Self::breath_first_traversal(self, start_vertex_value, &mut visited_vertices)
+        } else if kind == "dft" {
+            Self::depth_first_traversal(self, start_vertex_value, &mut visited_vertices)
+        } else {
+            panic!("Pick between bft(breath-first traversal) and dft(depth-first traversal)")
+        }
+    }
+
+    fn depth_first_traversal(
         &self,
         start_vertex_value: T,
         visited_vertices: &mut HashMap<usize, bool>,
@@ -122,7 +134,7 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
         }
     }
 
-    pub fn breath_first_traversal(
+    fn breath_first_traversal(
         &self,
         start_vertex_value: T,
         visited_vertices: &mut HashMap<usize, bool>,
@@ -167,27 +179,74 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Default for Graph<T> {
     }
 }
 
-#[test]
-fn test_graph() {
-    let mut graph: Graph<&str> = Graph::new();
+#[cfg(test)]
+mod tests {
+    use super::Graph;
 
-    graph.add_new_vertex("Maria");
-    graph.add_new_vertex("John");
-    graph.add_new_vertex("Rupert");
-    graph.add_new_vertex("Harry");
+    #[derive(PartialEq, Eq, Hash, Copy, Clone, Debug)]
+    struct TestNode {
+        id: i32,
+    }
 
-    graph.link_vertices("Maria", "John");
-    graph.link_vertices("Maria", "Rupert");
-    graph.link_vertices("John", "Harry");
-    graph.link_vertices("Rupper", "Harry");
+    #[test]
+    fn test_add_new_vertex_i32() {
+        let mut graph: Graph<i32> = Graph::new();
+        graph.add_new_vertex(1);
+        assert_eq!(graph.vertices.len(), 1);
+        assert_eq!(graph.vertices[0].data, 1);
+    }
 
-    let mut hsh: HashMap<usize, bool> = HashMap::new();
-    // let result = graph.depth_first_search("Maria", "Harry", &mut hsh);
+    #[test]
+    fn test_add_new_vertex_char() {
+        let mut graph: Graph<char> = Graph::new();
+        graph.add_new_vertex('A');
+        assert_eq!(graph.vertices.len(), 1);
+        assert_eq!(graph.vertices[0].data, 'A');
+    }
 
-    // println!("{:?}", result);
+    #[test]
+    fn test_add_new_vertex_custom_struct() {
+        let mut graph: Graph<TestNode> = Graph::new();
+        let node = TestNode { id: 1 };
+        graph.add_new_vertex(node);
+        assert_eq!(graph.vertices.len(), 1);
+        assert_eq!(graph.vertices[0].data, node);
+    }
 
-    // graph.depth_first_traversal("Maria", &mut hsh);
-    graph.breath_first_traversal("Maria", &mut hsh)
+    #[test]
+    fn test_link_vertices_i32() {
+        let mut graph = Graph::new();
+        graph.add_new_vertex(1);
+        graph.add_new_vertex(2);
+        graph.link_vertices(1, 2);
+
+        assert_eq!(graph.vertices[0].adjacent_vertices, vec![1]);
+        assert_eq!(graph.vertices[1].adjacent_vertices, vec![0]);
+    }
+
+    #[test]
+    fn test_link_vertices_char() {
+        let mut graph = Graph::new();
+        graph.add_new_vertex('A');
+        graph.add_new_vertex('B');
+        graph.link_vertices('A', 'B');
+
+        assert_eq!(graph.vertices[0].adjacent_vertices, vec![1]);
+        assert_eq!(graph.vertices[1].adjacent_vertices, vec![0]);
+    }
+
+    #[test]
+    fn test_link_vertices_custom_struct() {
+        let mut graph = Graph::new();
+        let node1 = TestNode { id: 1 };
+        let node2 = TestNode { id: 2 };
+        graph.add_new_vertex(node1);
+        graph.add_new_vertex(node2);
+        graph.link_vertices(node1, node2);
+
+        assert_eq!(graph.vertices[0].adjacent_vertices, vec![1]);
+        assert_eq!(graph.vertices[1].adjacent_vertices, vec![0]);
+    }
 }
 
 // https://smallcultfollowing.com/babysteps/blog/2015/04/06/modeling-graphs-in-rust-using-vector-indices/
