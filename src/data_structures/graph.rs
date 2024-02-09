@@ -33,7 +33,7 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
             }
         }
 
-        let mut vertex_b_index = 0;
+        let mut vertex_b_index = 1000;
         for (i, vertex) in self.vertices.iter().enumerate() {
             if vertex.data == vertex_b_value {
                 vertex_b_index = i;
@@ -92,7 +92,7 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
         None
     }
 
-    pub fn traversal(&self, start_vertex_value: T, kind: &str) {
+    pub fn traversal(&self, start_vertex_value: T, kind: &str) -> Vec<T> {
         let mut visited_vertices: HashMap<usize, bool> = HashMap::new();
 
         if kind == "bft" {
@@ -108,7 +108,7 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
         &self,
         start_vertex_value: T,
         visited_vertices: &mut HashMap<usize, bool>,
-    ) {
+    ) -> Vec<T> {
         let start_vertex_index = self
             .vertices
             .iter()
@@ -123,22 +123,28 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
             .unwrap();
 
         visited_vertices.insert(start_vertex_index, true);
-        println!("{:?}", self.vertices.get(start_vertex_index));
 
         for &adjacent_index in &self.vertices[start_vertex_index].adjacent_vertices {
             if visited_vertices.get(&adjacent_index).is_none() {
-                self.depth_first_traversal(self.vertices[adjacent_index].data, visited_vertices)
+                self.depth_first_traversal(self.vertices[adjacent_index].data, visited_vertices);
             } else {
                 continue;
             }
         }
+        let mut result: Vec<T> = vec![];
+
+        for key in visited_vertices.keys() {
+            result.push(self.vertices[*key].data);
+        }
+
+        result
     }
 
     fn breath_first_traversal(
         &self,
         start_vertex_value: T,
         visited_vertices: &mut HashMap<usize, bool>,
-    ) {
+    ) -> Vec<T> {
         let start_vertex_index = self
             .vertices
             .iter()
@@ -158,18 +164,25 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
         queue.push(start_vertex_index);
 
         while !queue.is_empty() {
-            let current_vertex = queue.remove(0);
+            let current_vertex_index = queue.remove(0);
 
-            for &adjacent_index in &self.vertices[start_vertex_index].adjacent_vertices {
+            for &adjacent_index in &self.vertices[current_vertex_index].adjacent_vertices {
                 if visited_vertices.get(&adjacent_index).is_none() {
-                    visited_vertices.insert(current_vertex, true);
+                    visited_vertices.insert(adjacent_index, true);
                     queue.push(adjacent_index);
-                    println!("{:?}", self.vertices.get(adjacent_index));
                 } else {
                     continue;
                 }
             }
         }
+
+        let mut result: Vec<T> = vec![];
+
+        for key in visited_vertices.keys() {
+            result.push(self.vertices[*key].data);
+        }
+
+        result
     }
 }
 
@@ -182,71 +195,116 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Default for Graph<T> {
 #[cfg(test)]
 mod tests {
     use super::Graph;
+    use super::HashMap;
 
-    #[derive(PartialEq, Eq, Hash, Copy, Clone, Debug)]
-    struct TestNode {
-        id: i32,
+    #[test]
+    fn test_add_new_vertex() {
+        let mut graph_int: Graph<u32> = Graph::new();
+        graph_int.add_new_vertex(1);
+        assert_eq!(graph_int.vertices.len(), 1);
+
+        let mut graph_char = Graph::new();
+        graph_char.add_new_vertex('a');
+        assert_eq!(graph_char.vertices.len(), 1);
     }
 
     #[test]
-    fn test_add_new_vertex_i32() {
-        let mut graph: Graph<i32> = Graph::new();
-        graph.add_new_vertex(1);
-        assert_eq!(graph.vertices.len(), 1);
-        assert_eq!(graph.vertices[0].data, 1);
+    fn test_link_vertices() {
+        let mut graph_int: Graph<u32> = Graph::new();
+        graph_int.add_new_vertex(1);
+        graph_int.add_new_vertex(2);
+        graph_int.link_vertices(1, 2);
+
+        assert_eq!(graph_int.vertices[0].adjacent_vertices, vec![1]);
+        assert_eq!(graph_int.vertices[1].adjacent_vertices, vec![0]);
+
+        let mut graph_char = Graph::new();
+        graph_char.add_new_vertex('a');
+        graph_char.add_new_vertex('b');
+        graph_char.link_vertices('a', 'b');
+
+        assert_eq!(graph_char.vertices[0].adjacent_vertices, vec![1]);
+        assert_eq!(graph_char.vertices[1].adjacent_vertices, vec![0]);
     }
 
     #[test]
-    fn test_add_new_vertex_char() {
-        let mut graph: Graph<char> = Graph::new();
-        graph.add_new_vertex('A');
-        assert_eq!(graph.vertices.len(), 1);
-        assert_eq!(graph.vertices[0].data, 'A');
+    #[should_panic(expected = "One of the vertices does not exist")]
+    fn test_link_nonexistent_vertices() {
+        let mut graph_int = Graph::new();
+        graph_int.add_new_vertex(1);
+        graph_int.link_vertices(1, 2);
     }
 
     #[test]
-    fn test_add_new_vertex_custom_struct() {
-        let mut graph: Graph<TestNode> = Graph::new();
-        let node = TestNode { id: 1 };
-        graph.add_new_vertex(node);
-        assert_eq!(graph.vertices.len(), 1);
-        assert_eq!(graph.vertices[0].data, node);
+    fn test_depth_first_search() {
+        let mut graph_int: Graph<u32> = Graph::new();
+        graph_int.add_new_vertex(1);
+        graph_int.add_new_vertex(2);
+        graph_int.add_new_vertex(3);
+        graph_int.link_vertices(1, 2);
+        graph_int.link_vertices(2, 3);
+
+        let mut visited_vertices = HashMap::new();
+        let search_result = graph_int.depth_first_search(1, 3, &mut visited_vertices);
+        assert!(search_result.is_some());
+        assert_eq!(search_result.unwrap().data, 3);
+
+        let mut graph_char = Graph::new();
+        graph_char.add_new_vertex('a');
+        graph_char.add_new_vertex('b');
+        graph_char.add_new_vertex('c');
+        graph_char.link_vertices('a', 'b');
+        graph_char.link_vertices('b', 'c');
+
+        let mut visited_vertices_char = HashMap::new();
+        let search_result_char =
+            graph_char.depth_first_search('a', 'c', &mut visited_vertices_char);
+        assert!(search_result_char.is_some());
+        assert_eq!(search_result_char.unwrap().data, 'c');
     }
 
     #[test]
-    fn test_link_vertices_i32() {
-        let mut graph = Graph::new();
-        graph.add_new_vertex(1);
-        graph.add_new_vertex(2);
-        graph.link_vertices(1, 2);
+    fn test_traversal() {
+        // test with u32
+        let mut graph_int: Graph<u32> = Graph::new();
+        graph_int.add_new_vertex(1);
+        graph_int.add_new_vertex(2);
+        graph_int.add_new_vertex(3);
+        graph_int.link_vertices(1, 2);
+        graph_int.link_vertices(2, 3);
+        let dft_result = graph_int.traversal(1, "dft");
+        let bft_result = graph_int.traversal(1, "bft");
 
-        assert_eq!(graph.vertices[0].adjacent_vertices, vec![1]);
-        assert_eq!(graph.vertices[1].adjacent_vertices, vec![0]);
-    }
+        assert_eq!(dft_result.len(), 3);
+        assert!(dft_result.contains(&1));
+        assert!(dft_result.contains(&2));
+        assert!(dft_result.contains(&3));
 
-    #[test]
-    fn test_link_vertices_char() {
-        let mut graph = Graph::new();
-        graph.add_new_vertex('A');
-        graph.add_new_vertex('B');
-        graph.link_vertices('A', 'B');
+        assert_eq!(bft_result.len(), 3);
+        assert!(bft_result.contains(&1));
+        assert!(bft_result.contains(&2));
+        assert!(bft_result.contains(&3));
 
-        assert_eq!(graph.vertices[0].adjacent_vertices, vec![1]);
-        assert_eq!(graph.vertices[1].adjacent_vertices, vec![0]);
-    }
+        // test with char
+        let mut graph_char = Graph::new();
+        graph_char.add_new_vertex('a');
+        graph_char.add_new_vertex('b');
+        graph_char.add_new_vertex('c');
+        graph_char.link_vertices('a', 'b');
+        graph_char.link_vertices('b', 'c');
+        let dft_result_char = graph_char.traversal('a', "dft");
+        let bft_result_char = graph_char.traversal('a', "bft");
 
-    #[test]
-    fn test_link_vertices_custom_struct() {
-        let mut graph = Graph::new();
-        let node1 = TestNode { id: 1 };
-        let node2 = TestNode { id: 2 };
-        graph.add_new_vertex(node1);
-        graph.add_new_vertex(node2);
-        graph.link_vertices(node1, node2);
+        assert_eq!(dft_result_char.len(), 3);
+        assert!(dft_result_char.contains(&'a'));
+        assert!(dft_result_char.contains(&'b'));
+        assert!(dft_result_char.contains(&'c'));
 
-        assert_eq!(graph.vertices[0].adjacent_vertices, vec![1]);
-        assert_eq!(graph.vertices[1].adjacent_vertices, vec![0]);
+        assert_eq!(bft_result_char.len(), 3);
+        assert!(bft_result_char.contains(&'a'));
+        assert!(bft_result_char.contains(&'b'));
+        assert!(bft_result_char.contains(&'c'));
     }
 }
 
-// https://smallcultfollowing.com/babysteps/blog/2015/04/06/modeling-graphs-in-rust-using-vector-indices/
+// Reference: https://smallcultfollowing.com/babysteps/blog/2015/04/06/modeling-graphs-in-rust-using-vector-indices/
