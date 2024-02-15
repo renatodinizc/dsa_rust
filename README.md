@@ -95,6 +95,9 @@ A generic heap implementation featuring basic operations like insert and remove 
 ### Custom Trie
 A generic Trie implementation, which can be used to implement a autocomplete feature for words in a smartphone. Pretty cool!
 
+### Custom Graph
+A generic Graph implementation, specialized in containing relationships. Powered with depth-first search and traversal and breath-first traversal capabilities.
+
 ## Testing
 
 Test cases are included for verifying the correctness of each algorithm and the hash map. Run tests with:
