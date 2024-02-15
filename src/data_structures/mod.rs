@@ -1,4 +1,5 @@
 mod binary_search_tree;
+mod graph;
 mod hash_map;
 mod heap;
 mod linked_list;
@@ -7,6 +8,7 @@ mod stack;
 mod trie;
 
 pub use self::binary_search_tree::BinarySearchTree;
+pub use self::graph::Graph;
 pub use self::hash_map::HashMap;
 pub use self::heap::Heap;
 pub use self::linked_list::LinkedList;
