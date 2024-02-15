@@ -77,7 +77,8 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
 
         visited_vertices.insert(start_vertex_index, true);
 
-        for (&adjacent_index, &_link_weight) in &self.vertices[start_vertex_index].adjacent_vertices {
+        for (&adjacent_index, &_link_weight) in &self.vertices[start_vertex_index].adjacent_vertices
+        {
             if !visited_vertices.get(&adjacent_index).unwrap_or(&false) {
                 if let Some(found) = self.depth_first_search(
                     self.vertices[adjacent_index].data,
@@ -124,7 +125,8 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
 
         visited_vertices.insert(start_vertex_index, true);
 
-        for (&adjacent_index, &_link_weight) in &self.vertices[start_vertex_index].adjacent_vertices {
+        for (&adjacent_index, &_link_weight) in &self.vertices[start_vertex_index].adjacent_vertices
+        {
             if visited_vertices.get(&adjacent_index).is_none() {
                 self.depth_first_traversal(self.vertices[adjacent_index].data, visited_vertices);
             } else {
@@ -166,7 +168,9 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
         while !queue.is_empty() {
             let current_vertex_index = queue.remove(0);
 
-            for (&adjacent_index, &_link_weight) in &self.vertices[current_vertex_index].adjacent_vertices {
+            for (&adjacent_index, &_link_weight) in
+                &self.vertices[current_vertex_index].adjacent_vertices
+            {
                 if visited_vertices.get(&adjacent_index).is_none() {
                     visited_vertices.insert(adjacent_index, true);
                     queue.push(adjacent_index);
