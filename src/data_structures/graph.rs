@@ -4,7 +4,7 @@ use std::hash::Hash;
 #[derive(Debug)]
 pub struct Vertex<T> {
     data: T,
-    pub adjacent_vertices: Vec<usize>, // Store indices of adjacent vertices
+    pub adjacent_vertices: HashMap<usize, u32>, // Store indices of adjacent vertices with weights
 }
 
 pub struct Graph<T> {
@@ -21,11 +21,11 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
     pub fn add_new_vertex(&mut self, data: T) {
         self.vertices.push(Vertex {
             data,
-            adjacent_vertices: Vec::new(),
+            adjacent_vertices: HashMap::new(),
         })
     }
 
-    pub fn link_vertices(&mut self, vertex_a_value: T, vertex_b_value: T) {
+    pub fn link_vertices(&mut self, vertex_a_value: T, vertex_b_value: T, link_weight: u32) {
         let mut vertex_a_index = 0;
         for (i, vertex) in self.vertices.iter().enumerate() {
             if vertex.data == vertex_a_value {
@@ -46,10 +46,10 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
         if vertex_a.is_some() && vertex_b.is_some() {
             self.vertices[vertex_a_index]
                 .adjacent_vertices
-                .push(vertex_b_index);
+                .insert(vertex_b_index, link_weight);
             self.vertices[vertex_b_index]
                 .adjacent_vertices
-                .push(vertex_a_index);
+                .insert(vertex_a_index, link_weight);
         } else {
             panic!("One of the vertices does not exist");
         }
@@ -77,7 +77,7 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
 
         visited_vertices.insert(start_vertex_index, true);
 
-        for &adjacent_index in &self.vertices[start_vertex_index].adjacent_vertices {
+        for (&adjacent_index, &_link_weight) in &self.vertices[start_vertex_index].adjacent_vertices {
             if !visited_vertices.get(&adjacent_index).unwrap_or(&false) {
                 if let Some(found) = self.depth_first_search(
                     self.vertices[adjacent_index].data,
@@ -124,7 +124,7 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
 
         visited_vertices.insert(start_vertex_index, true);
 
-        for &adjacent_index in &self.vertices[start_vertex_index].adjacent_vertices {
+        for (&adjacent_index, &_link_weight) in &self.vertices[start_vertex_index].adjacent_vertices {
             if visited_vertices.get(&adjacent_index).is_none() {
                 self.depth_first_traversal(self.vertices[adjacent_index].data, visited_vertices);
             } else {
@@ -166,7 +166,7 @@ impl<T: PartialEq + Eq + Hash + Copy + std::fmt::Debug> Graph<T> {
         while !queue.is_empty() {
             let current_vertex_index = queue.remove(0);
 
-            for &adjacent_index in &self.vertices[current_vertex_index].adjacent_vertices {
+            for (&adjacent_index, &_link_weight) in &self.vertices[current_vertex_index].adjacent_vertices {
                 if visited_vertices.get(&adjacent_index).is_none() {
                     visited_vertices.insert(adjacent_index, true);
                     queue.push(adjacent_index);
@@ -213,18 +213,18 @@ mod tests {
         let mut graph_int: Graph<u32> = Graph::new();
         graph_int.add_new_vertex(1);
         graph_int.add_new_vertex(2);
-        graph_int.link_vertices(1, 2);
+        graph_int.link_vertices(1, 2, 8);
 
-        assert_eq!(graph_int.vertices[0].adjacent_vertices, vec![1]);
-        assert_eq!(graph_int.vertices[1].adjacent_vertices, vec![0]);
+        assert!(graph_int.vertices[0].adjacent_vertices.contains_key(&1));
+        assert!(graph_int.vertices[1].adjacent_vertices.contains_key(&0));
 
         let mut graph_char = Graph::new();
         graph_char.add_new_vertex('a');
         graph_char.add_new_vertex('b');
-        graph_char.link_vertices('a', 'b');
+        graph_char.link_vertices('a', 'b', 18);
 
-        assert_eq!(graph_char.vertices[0].adjacent_vertices, vec![1]);
-        assert_eq!(graph_char.vertices[1].adjacent_vertices, vec![0]);
+        assert!(graph_char.vertices[0].adjacent_vertices.contains_key(&1));
+        assert!(graph_char.vertices[1].adjacent_vertices.contains_key(&0));
     }
 
     #[test]
@@ -232,7 +232,7 @@ mod tests {
     fn test_link_nonexistent_vertices() {
         let mut graph_int = Graph::new();
         graph_int.add_new_vertex(1);
-        graph_int.link_vertices(1, 2);
+        graph_int.link_vertices(1, 2, 6);
     }
 
     #[test]
@@ -241,8 +241,8 @@ mod tests {
         graph_int.add_new_vertex(1);
         graph_int.add_new_vertex(2);
         graph_int.add_new_vertex(3);
-        graph_int.link_vertices(1, 2);
-        graph_int.link_vertices(2, 3);
+        graph_int.link_vertices(1, 2, 4);
+        graph_int.link_vertices(2, 3, 9);
 
         let mut visited_vertices = HashMap::new();
         let search_result = graph_int.depth_first_search(1, 3, &mut visited_vertices);
@@ -253,8 +253,8 @@ mod tests {
         graph_char.add_new_vertex('a');
         graph_char.add_new_vertex('b');
         graph_char.add_new_vertex('c');
-        graph_char.link_vertices('a', 'b');
-        graph_char.link_vertices('b', 'c');
+        graph_char.link_vertices('a', 'b', 10);
+        graph_char.link_vertices('b', 'c', 12);
 
         let mut visited_vertices_char = HashMap::new();
         let search_result_char =
@@ -270,8 +270,8 @@ mod tests {
         graph_int.add_new_vertex(1);
         graph_int.add_new_vertex(2);
         graph_int.add_new_vertex(3);
-        graph_int.link_vertices(1, 2);
-        graph_int.link_vertices(2, 3);
+        graph_int.link_vertices(1, 2, 92);
+        graph_int.link_vertices(2, 3, 22);
         let dft_result = graph_int.traversal(1, "dft");
         let bft_result = graph_int.traversal(1, "bft");
 
@@ -290,8 +290,8 @@ mod tests {
         graph_char.add_new_vertex('a');
         graph_char.add_new_vertex('b');
         graph_char.add_new_vertex('c');
-        graph_char.link_vertices('a', 'b');
-        graph_char.link_vertices('b', 'c');
+        graph_char.link_vertices('a', 'b', 28);
+        graph_char.link_vertices('b', 'c', 37);
         let dft_result_char = graph_char.traversal('a', "dft");
         let bft_result_char = graph_char.traversal('a', "bft");
 
